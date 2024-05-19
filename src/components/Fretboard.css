@@ -1,0 +1,51 @@
+.fretboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  .string {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 5px;
+  }
+  
+  .fret {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ddd;
+    margin-right: 2px;
+    border-radius: 4px;
+    background-color: #f5f5f5;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .fret.open-note {
+    margin-right: 7px; /* Adjust the margin to add space between open note and first fret */
+  }
+  
+  .fret.open-note::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -6px; /* Adjust to match the margin */
+    width: 3px;
+    height: 100%;
+    background-color: #8C92AC;
+  }
+  
+  .fret:last-child {
+    margin-right: 0;
+  }
+  
+  .note {
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 14px;
+  }

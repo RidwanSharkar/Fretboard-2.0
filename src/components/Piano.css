@@ -1,0 +1,51 @@
+.piano {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  overflow: hidden; /* Ensure container doesn't cut off black keys */
+}
+
+.keys {
+  display: flex;
+  position: relative;
+}
+
+.key {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0px;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+}
+
+.white-key {
+  width: 25px;
+  height: 100px;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 4px;
+  z-index: 1;
+}
+
+.black-key {
+  width: 18px;
+  height: 65px;
+  background-color: black;
+  color: white;
+  position: absolute;
+  border-radius: 2px;
+  top: 0;
+  left: 100%;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+.key-container {
+  position: relative;
+}
+
+
