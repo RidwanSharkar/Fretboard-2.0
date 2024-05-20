@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './Fretboard.css';
-import { Note } from '../models/Note';
+import { GuitarNote as Note } from '../models/Note';
 
 interface FretboardProps {
   notes: Note[][];
@@ -21,21 +21,18 @@ const noteColors: { [key: string]: string } = {
   B: '#e6d06f'      
 };
 
-// #7090C5
-// #94DEE8
-// #BDE38C
-// #EFE391
-// #F5AB72
-// #F88787
-
-
-
 const Fretboard: React.FC<FretboardProps> = ({ notes }) => {
   const [activeNote, setActiveNote] = useState<Note | null>(null);
 
+
   const handleFretClick = (note: Note) => {
-    setActiveNote(note);
+    if (activeNote && activeNote.string === note.string && activeNote.fret === note.fret) {
+      setActiveNote(null); // Toggle off if the same fret is clicked again
+    } else {
+      setActiveNote(note);
+    }
   };
+
 
   return (
     <div className="fretboard">

@@ -23,11 +23,11 @@
 }
 
 .white-key {
-  width: 25px;
+  width: 24px;
   height: 100px;
   background-color: white;
-  border: 1px solid black;
-  border-radius: 4px;
+  margin-right: 2px;
+  border-radius: 0 0 4px 4px;
   z-index: 1;
 }
 
@@ -37,11 +37,20 @@
   background-color: black;
   color: white;
   position: absolute;
-  border-radius: 2px;
+  border-radius: 0 0 4px 4px;
   top: 0;
   left: 100%;
   transform: translateX(-50%);
   z-index: 2;
+}
+
+.note-name {
+  color: white; /* Ensures visibility on darker keys */
+  font-size: 12px;
+  position: absolute;
+  bottom: 5px;  /* Position from the bottom */
+  left: 50%;
+  transform: translateX(-50%); /* Centers text horizontally */
 }
 
 .key-container {

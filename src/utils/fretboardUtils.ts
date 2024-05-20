@@ -1,7 +1,7 @@
-import { Note } from '../models/Note';
+import { GuitarNote } from '../models/Note';
 
-export const constructFretboard = (strings: number, frets: number): Note[][] => {
-  const notes: Note[][] = [];
+export const constructFretboard = (strings: number, frets: number): GuitarNote[][] => {
+  const notes: GuitarNote[][] = [];
   const standardTuning = ['E', 'A', 'D', 'G', 'B', 'E'];
   const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
