@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  padding-top: 40px;
 }
 
 .App-logo {
@@ -13,11 +14,17 @@
   }
 }
 
+body {
+  margin: 0;
+  background-color: #282c34; /* Same as your header background for a uniform look */
+  color: white; /* Ensure text color is set appropriately for visibility */
+  overflow: hidden; /* Temporarily hide overflow to see if there's unnecessary space WILL HIDE NECESSARY IF BIG */
+}
+
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  display: block;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
@@ -35,4 +42,27 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  
+}
+
+button {
+  padding: 3px 6px;
+  margin: 0px 2px;
+  font-size: 14px;
+  cursor: pointer;
+  background-color: #9DD9F3; /*BUTTON COLOR*/
+  color: white;
+  border: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #77C3EC; /*HOVER COLOR*/
 }
