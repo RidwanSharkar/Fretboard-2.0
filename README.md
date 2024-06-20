@@ -16,6 +16,8 @@ ________________________________________________________
 
 IMPLEMENTATION 2:
 These chords and their inversion possibilities, as well as exploring their relationships within higher-order Chord Progressions and Keys, are to be implemented for a comprehensive music theory exploration and visualization tool. Further plans include feeding the user various chord progression possibilities based on an input to aid in song writing. For instance, if a user wants to be in the key of A minor and wants to explore the various chord progressions it offers, the program will follow outlined chord progression formulas and feed the user various possibilties that are "ready-made" to begin songwriting. 
+
+
 ![image](https://github.com/RidwanSharkar/Fretboard-2.0/assets/158855066/3ecf0a70-ade2-4e37-8158-b2a714cb42e3)
 
 
