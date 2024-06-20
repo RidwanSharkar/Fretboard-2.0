@@ -1,3 +1,5 @@
+// Fretboard.ts
+
 import { GuitarNote } from './Note';
 
 export interface Fretboard {

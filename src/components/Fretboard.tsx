@@ -1,10 +1,12 @@
+// Fretboard.tsx
+
 import React, { useState } from 'react';
 import './Fretboard.css';
 import { GuitarNote as Note } from '../models/Note';
 
 interface FretboardProps {
   notes: Note[][];
-  activeNotes: string[]; // Array of active note names for chords
+  activeNotes: string[]; 
 }
 
 const noteColors: { [key: string]: string } = {
@@ -27,7 +29,7 @@ const Fretboard: React.FC<FretboardProps> = ({ notes, activeNotes }) => {
 
   const handleFretClick = (note: Note) => {
     if (activeNote && activeNote.string === note.string && activeNote.fret === note.fret) {
-      setActiveNote(null); // Toggle off if the same fret is clicked again
+      setActiveNote(null); // untoggle
     } else {
       setActiveNote(note);
     }

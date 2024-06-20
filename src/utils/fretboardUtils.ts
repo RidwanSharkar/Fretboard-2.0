@@ -1,3 +1,5 @@
+// fretboardUtils.ts
+
 import { GuitarNote } from '../models/Note';
 
 export const constructFretboard = (strings: number, frets: number): GuitarNote[][] => {

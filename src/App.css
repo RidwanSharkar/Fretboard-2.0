@@ -1,6 +1,8 @@
+/* App.css */
+
 .App {
   text-align: center;
-  padding-top: 40px;
+  padding-top: 150px;
 }
 
 .App-logo {
@@ -16,9 +18,9 @@
 
 body {
   margin: 0;
-  background-color: #282c34; /* Same as your header background for a uniform look */
-  color: white; /* Ensure text color is set appropriately for visibility */
-  overflow: hidden; /* Temporarily hide overflow to see if there's unnecessary space WILL HIDE NECESSARY IF BIG */
+  background-color: #282c34; 
+  color: white; 
+  overflow: hidden; 
 }
 
 .App-header {
@@ -56,7 +58,7 @@ button {
   margin: 0px 2px;
   font-size: 14px;
   cursor: pointer;
-  background-color: #9DD9F3; /*BUTTON COLOR*/
+  background-color: #4597ba; /*BUTTON COLOR*/
   color: white;
   border: none;
   border-radius: 5px;

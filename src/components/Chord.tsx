@@ -1,3 +1,5 @@
+// Chords.tsx
+
 import React, { useEffect, useState } from 'react';
 import { Chord as ChordModel } from '../models/Chord';
 import { GuitarNote } from '../models/Note';
