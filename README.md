@@ -1,46 +1,29 @@
-# Getting Started with Create React App
+**Fretboard Explorer 2.0**
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+________________________________________________________________________________________________________________
 
-## Available Scripts
+OVERVIEW:
 
-In the project directory, you can run:
+Fretboard Explorer is designed for guitarists who want to explore music theory and chord progressions, and their corresponding finger-positions across the fretboard. The program takes user input for a chord, key, or chord progression and computes all possible fingerings across the fretboard. Users can specify detailed chord qualities including major, minor, diminished, augmented, and extended chords such as 7th, 9th, and more. It supports specification of chord criteria (such as 3 strings only, or 3 frets apart) or modifications to match user preferences for finger patterns.  
 
-### `npm start`
+________________________________________________________________________________________________________________
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+[IMPLEMENTATION 1] INTRACTIVE FRETBOARD FOR MUSIC THEORY EXPLORATION
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+A simple Array of all of the notes in the western scale [A, A#, B, C, C#, D, D#, E, F, F#, G, G#] are iterated through and wrapped around (%) to extract the correct notes from the appropriate chord formula. For instance, the C Major chord consists of 1-3-5, or C-E-G, and will be highlighted upon user selection.
 
-### `npm test`
+Once chord notes are displayed, an algorithm will determine which combinations of these available notes within the selected chord can be considered a "valid chord", meaning that they are actually physically playable on the guitar in real life. This involves eliminating the possibility of more than one note per string, or that no 2 notes be 5 frets apart (for instance, depending on the length of your fingers). Various string customization parameters, such as "no open notes", or "don't skip strings" are available as well.  
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+________________________________________________________________________________________________________________
 
-### `npm run build`
+[IMPLEMENTATION 2] CHORD PROGRESSION GENERATOR FOR MUSIC COMPOSITION
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+All possible chords and their inversion possibilities, as well as their relationships within higher-order Chord Progressions & Keys, are to be implemented for a comprehensive music theory exploration and visualization tool. Final plans include the ability to feed the user various chord progression possibilities (based on some desired user criteria). For instance, if a user wants to be in the key of A minor and wants to explore the various chord progressions it offers, the program will follow outlined chord progression formulas and feed the user various Chord Progression possibilties that are "ready-made" to begin song-writing. Options to "break the rules" of music theory will be implemented to mimic realistic composition, including transitioning to and borrowing compatible chords from neighboring keys.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+![image](https://github.com/RidwanSharkar/Fretboard-2.0/assets/158855066/3ecf0a70-ade2-4e37-8158-b2a714cb42e3)
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
