@@ -1,12 +1,10 @@
-// Fretboard.tsx
-
 import React, { useState } from 'react';
 import './Fretboard.css';
 import { GuitarNote as Note } from '../models/Note';
 
 interface FretboardProps {
   notes: Note[][];
-  activeNotes: string[]; 
+  activeNotes: { note: string; interval: string }[]; 
 }
 
 const noteColors: { [key: string]: string } = {
@@ -40,17 +38,22 @@ const Fretboard: React.FC<FretboardProps> = ({ notes, activeNotes }) => {
       {notes.map((stringNotes, stringIndex) => (
         <div key={stringIndex} className="string">
           {stringNotes.map((note, fretIndex) => {
-            const isActive = activeNote === note || activeNotes.includes(note.name);
+            const isActive = activeNotes.some(an => an.note === note.name);
+            const activeDetail = activeNotes.find(an => an.note === note.name);
+
             return (
               <div
                 key={fretIndex}
                 className={`fret ${isActive ? 'active' : ''} ${fretIndex === 0 ? 'open-note' : ''}`}
                 onClick={() => handleFretClick(note)}
-                style={{
-                  backgroundColor: isActive ? noteColors[note.name] : '#f5f5f5'
-                }}
+                style={{ backgroundColor: isActive ? noteColors[note.name] : '#f5f5f5' }}
               >
-                <span className="note">{note.name}</span>
+                <span className="note">{note.name}</span> {/* for note name centering */}
+                {isActive && (
+                  <span className="note-label" style={{ position: 'absolute', top: '2px', left: '2px', fontSize: '8px', color: '#fff', fontWeight: 'bold' }}>
+                    {activeDetail?.interval} {/* top-leftedness */}
+                  </span>
+                )}
               </div>
             );
           })}

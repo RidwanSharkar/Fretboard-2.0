@@ -1,5 +1,14 @@
 /* fretboard.css */
 
+.note-label {
+  position: absolute; /* Positioning it absolutely within the .fret div */
+  top: 2px; /* Close to the top of the fret box */
+  left: 2px; /* Close to the left of the fret box */
+  font-size: 10px; /* Smaller font size for the labels */
+  color: #fff; /* Ensuring the text color is white for better visibility */
+  font-weight: bold; /* Optional: for better visibility */
+}
+
 .fretboard {
   display: flex;
   flex-direction: column;
@@ -22,7 +31,7 @@
   border: 1px solid #ddd; 
   margin-right: 2px;
   border-radius: 4px;
-  background-color: #333; /* background???? */
+  background-color: #333; /* dafq */
   position: relative;
   cursor: pointer;
   transition: background-color 0.3s;
