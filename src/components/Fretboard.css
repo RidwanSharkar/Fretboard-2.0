@@ -28,7 +28,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #ddd; 
+  border: 1px solid #282c34; 
   margin-right: 2px;
   border-radius: 4px;
   background-color: #333; /* dafq */
@@ -65,3 +65,4 @@
 .fretboard {
     margin-bottom: 80px;  
 }
+

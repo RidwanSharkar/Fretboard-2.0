@@ -1,8 +1,7 @@
 // App.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import Fretboard from './components/Fretboard';
-import Chord from './components/Chord';
 import { constructFretboard } from './utils/fretboardUtils';
 import { chordFormulas } from './utils/chordUtils';
 
@@ -33,18 +32,41 @@ const App: React.FC = () =>
         const pattern = isMinorKey ? [0, 2, 3, 5, 7, 8, 10] : [0, 2, 4, 5, 7, 9, 11];
         const types = isMinorKey ? ['minor', 'diminished', 'major', 'minor', 'minor', 'major', 'major']
                                  : ['major', 'minor', 'minor', 'major', 'major', 'minor', 'diminished'];
+        
+        const degreeLabels = isMinorKey ? ['i', 'iiº', 'III', 'iv', 'v', 'VI', 'VII'] 
+                                        : ['I', 'ii', 'iii', 'IV', 'V', 'vi', 'viiº'];     
+
+        return (
+            <div className="chord-container">
+                <div className="chord-buttons">
+                    {pattern.map((shift, index) => {
+                        const chordRoot = notes[(rootIndex + shift) % 12];
+                        const type = types[index];
+                        const isSelectedChord = selectedChord && selectedChord.root === chordRoot && selectedChord.type === type;
     
-        return pattern.map((shift, index) => {
-            const chordRoot = notes[(rootIndex + shift) % 12];
-            const type = types[index];
-            return (
-                <button key={`${chordRoot}-${type}`} onClick={() => handleChordSelection(chordRoot, type as keyof typeof chordFormulas)}>
-                    {`${chordRoot} ${type}`}
-                </button>
-            );
-        });
+                        return (
+                            <button
+                                className={`button ${isSelectedChord ? 'selected' : ''}`}
+                                key={`${chordRoot}-${type}`}
+                                onClick={() => handleChordSelection(chordRoot, type as keyof typeof chordFormulas)}
+                            >
+                                {`${chordRoot} ${type}`}
+                            </button>
+                        );
+                    })}
+                </div>
+                <div className="chord-labels">
+                    {degreeLabels.map(label => (
+                        <div className="label" key={label}>{label}</div>
+                    ))}
+                </div>
+            </div>
+        );
     };
+
+
 //=================================================================================================================//    
+
     const handleChordSelection = (root: string, type: keyof typeof chordFormulas) => 
     {
         resetToggles();
@@ -63,16 +85,16 @@ const App: React.FC = () =>
 
     const toggleSeventh = () => {
         if (selectedChord) {
-            setIncludeSeventh(!includeSeventh); 
             setIncludeNinth(false);  
+            setIncludeSeventh(!includeSeventh); 
             updateChordNotes(selectedChord.root, selectedChord.type);
         }
     };
 
     const toggleNinth = () => {
         if (selectedChord) {
-            setIncludeNinth(!includeNinth);  
             setIncludeSeventh(false);  
+            setIncludeNinth(!includeNinth);  
             updateChordNotes(selectedChord.root, selectedChord.type);
         }
     };
@@ -110,36 +132,39 @@ const App: React.FC = () =>
     return (
         <div className="App">
             <header className="App-header">
-                <div className="circle-container">
-                    {keys.map((key, index) => {
-                        const angleMajor = index * (360 / keys.length) - 90;
-                        const angleMinor = angleMajor - 90; 
+            <div className="circle-container">
+    {keys.map((key, index) => {
+        const angleMajor = index * (360 / keys.length) - 90;
+        const xMajor = radiusMajor * Math.cos(angleMajor * Math.PI / 180);
+        const yMajor = radiusMajor * Math.sin(angleMajor * Math.PI / 180);
+        const isSelectedMajor = selectedKey === key && !isMinorKey;
 
-                        const xMajor = radiusMajor * Math.cos(angleMajor * Math.PI / 180);
-                        const yMajor = radiusMajor * Math.sin(angleMajor * Math.PI / 180);
-                        const xMinor = radiusMinor * Math.cos(angleMinor * Math.PI / 180);
-                        const yMinor = radiusMinor * Math.sin(angleMinor * Math.PI / 180);
+        const angleMinor = angleMajor - 90; 
+        const xMinor = radiusMinor * Math.cos(angleMinor * Math.PI / 180);
+        const yMinor = radiusMinor * Math.sin(angleMinor * Math.PI / 180);
+        const isSelectedMinor = selectedKey === key && isMinorKey;
 
-                        return (
-                            <React.Fragment key={key}>
-                                <button
-                                    className="circle-button"
-                                    style={{ transform: `translate(${xMajor}px, ${yMajor}px)` }}
-                                    onClick={() => handleKeySelection(key, false)}
-                                >
-                                    {key} Major
-                                </button>
-                                <button
-                                    className="circle-button minor"
-                                    style={{ transform: `translate(${xMinor}px, ${yMinor}px)` }}
-                                    onClick={() => handleKeySelection(key, true)}
-                                >
-                                    {key} Minor
-                                </button>
-                            </React.Fragment>
-                        );
-                    })}
-                </div>
+        return (
+            <React.Fragment key={key}>
+                <button
+                    className={`circle-button ${isSelectedMajor ? 'selected' : ''}`}
+                    style={{ transform: `translate(${xMajor}px, ${yMajor}px)` }}
+                    onClick={() => handleKeySelection(key, false)}
+                >
+                    {key} Major
+                </button>
+                <button
+                    className={`circle-button minor ${isSelectedMinor ? 'selected' : ''}`}
+                    style={{ transform: `translate(${xMinor}px, ${yMinor}px)` }}
+                    onClick={() => handleKeySelection(key, true)}
+                >
+                    {key} Minor
+                </button>
+            </React.Fragment>
+        );
+    })}
+    <div className="circle-text">Select Key</div>
+</div>
 
 
                 {/* Chord Buttons */}

@@ -18,7 +18,7 @@
 
 body {
   margin: 0;
-  background-color: #282c34; 
+  background-color: #282c34; /* ACTUAL background */
   color: white; 
   overflow: hidden; 
 }
@@ -82,11 +82,49 @@ button:hover {
 
 .circle-button {
   position: absolute;
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
   transform-origin: center;
+  border-radius: 100px;
 }
 
+/*====================================================================================*/ 
+
+.chord-buttons, .chord-labels {
+  display: flex;
+  justify-content: center; 
+  flex-wrap: nowrap;  
+}
+
+.button, .label {
+  width: 80px;  
+  margin: 0 5px; 
+  text-align: center;  
+}
+
+.label {
+  font-size: 20px;
+  height: 20px;  
+  line-height: 20px;  
+  width: 80px; 
+  margin: 5px 5px 0;  
+  text-align: center; 
+}
+
+.selected {
+  background-color: #82d3ff; /* Darker color for selection */
+  color: white;
+}
+
+.circle-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 30px;  
+  color: #FFF;  /* Select Key text */
+  z-index: 10; 
+}
