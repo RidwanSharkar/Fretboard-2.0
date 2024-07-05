@@ -42,6 +42,8 @@ const App: React.FC = () =>
                     {pattern.map((shift, index) => {
                         const chordRoot = notes[(rootIndex + shift) % 12];
                         const type = types[index];
+                        // Modify type string for display
+                        const displayType = type === 'diminished' ? 'dim' : type;
                         const isSelectedChord = selectedChord && selectedChord.root === chordRoot && selectedChord.type === type;
     
                         return (
@@ -50,7 +52,7 @@ const App: React.FC = () =>
                                 key={`${chordRoot}-${type}`}
                                 onClick={() => handleChordSelection(chordRoot, type as keyof typeof chordFormulas)}
                             >
-                                {`${chordRoot} ${type}`}
+                                {`${chordRoot} ${displayType}`} {/* Display modified type */}
                             </button>
                         );
                     })}
@@ -133,16 +135,16 @@ const App: React.FC = () =>
         <div className="App">
             <header className="App-header">
             <div className="circle-container">
-    {keys.map((key, index) => {
-        const angleMajor = index * (360 / keys.length) - 90;
-        const xMajor = radiusMajor * Math.cos(angleMajor * Math.PI / 180);
-        const yMajor = radiusMajor * Math.sin(angleMajor * Math.PI / 180);
-        const isSelectedMajor = selectedKey === key && !isMinorKey;
+                {keys.map((key, index) => {
+                    const angleMajor = index * (360 / keys.length) - 90;
+                    const xMajor = radiusMajor * Math.cos(angleMajor * Math.PI / 180);
+                    const yMajor = radiusMajor * Math.sin(angleMajor * Math.PI / 180);
+                    const isSelectedMajor = selectedKey === key && !isMinorKey;
 
-        const angleMinor = angleMajor - 90; 
-        const xMinor = radiusMinor * Math.cos(angleMinor * Math.PI / 180);
-        const yMinor = radiusMinor * Math.sin(angleMinor * Math.PI / 180);
-        const isSelectedMinor = selectedKey === key && isMinorKey;
+                    const angleMinor = angleMajor - 90; 
+                    const xMinor = radiusMinor * Math.cos(angleMinor * Math.PI / 180);
+                    const yMinor = radiusMinor * Math.sin(angleMinor * Math.PI / 180);
+                    const isSelectedMinor = selectedKey === key && isMinorKey;
 
         return (
             <React.Fragment key={key}>
@@ -167,23 +169,23 @@ const App: React.FC = () =>
 </div>
 
 
+
+
+
                 {/* Chord Buttons */}
                 <div className = "row">
                     {renderChordsForSelectedKey()}
                 </div>
 
-                {/* Toggle Buttons */}
-                <div style={{ marginTop: '10px' }}>
-                <button onClick={toggleSeventh} style={{ marginRight: '10px' }}>
-                    7th
-                </button>
-                <button onClick={toggleNinth}>
-                    9th
-                </button>
-                </div>
-
-                {/* Fretboard */}
+                {/* Fretboard and toggles container */}
+                <div className="fretboard-container"> 
                 <Fretboard notes={constructFretboard(6, 15)} activeNotes={activeNotes} />
+                <div className="toggle-buttons">
+                    <button onClick={toggleSeventh} className="toggle-button">7th</button>
+                    <button onClick={toggleNinth} className="toggle-button">9th</button>
+                </div>
+            </div>
+
             </header>
         </div>
     );
