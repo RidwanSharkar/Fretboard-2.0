@@ -23,9 +23,11 @@ const App: React.FC = () =>
     const handleKeySelection = (key: string, isMinor: boolean) => {
         console.log("Selected Key: ", key, " Is Minor: ", isMinor);
         setSelectedKey(key);
+        setIsMinorKey(isMinor);
+        resetToggles();
         setActiveNotes([]); 
-        setIsMinorKey(isMinor); 
     };
+
     const renderChordsForSelectedKey = () => {
         const rootIndex = notes.indexOf(selectedKey);
         const pattern = isMinorKey ? [0, 2, 3, 5, 7, 8, 10] : [0, 2, 4, 5, 7, 9, 11];
@@ -43,13 +45,38 @@ const App: React.FC = () =>
         });
     };
 //=================================================================================================================//    
-const handleChordSelection = (root: string, type: keyof typeof chordFormulas) => 
+    const handleChordSelection = (root: string, type: keyof typeof chordFormulas) => 
     {
-      setSelectedChord({ root, type });
-      setIncludeSeventh(false);
-      setIncludeNinth(false);
-      updateChordNotes(root, type);
+        resetToggles();
+        setSelectedChord({ root, type });
+        setActiveNotes([]);
+        updateChordNotes(root, type);
+    };  
+
+    const resetToggles = () => 
+    {
+        setIncludeSeventh(false);
+        setIncludeNinth(false);
     };
+
+//=================================================================================================================//
+
+    const toggleSeventh = () => {
+        if (selectedChord) {
+            setIncludeSeventh(!includeSeventh); 
+            setIncludeNinth(false);  
+            updateChordNotes(selectedChord.root, selectedChord.type);
+        }
+    };
+
+    const toggleNinth = () => {
+        if (selectedChord) {
+            setIncludeNinth(!includeNinth);  
+            setIncludeSeventh(false);  
+            updateChordNotes(selectedChord.root, selectedChord.type);
+        }
+    };
+
 //=================================================================================================================//
     const updateChordNotes = (root: string, type: keyof typeof chordFormulas) => 
     {
@@ -73,25 +100,6 @@ const handleChordSelection = (root: string, type: keyof typeof chordFormulas) =>
         additionalIntervals.push({ note: notes[(rootIndex + 14) % 12], interval: '9th' });
       }
       setActiveNotes([...baseIntervals, ...additionalIntervals]);
-    };
-//=================================================================================================================//
-    const toggleSeventh = () => {
-        setIncludeSeventh(prev => {
-            if (!prev) setIncludeNinth(false);
-            return !prev;
-        });
-        if (selectedChord) {
-            updateChordNotes(selectedChord.root, selectedChord.type);
-        }
-    };
-    const toggleNinth = () => {
-        setIncludeNinth(prev => {
-            if (!prev) setIncludeSeventh(false);
-            return !prev;
-        });
-        if (selectedChord) {
-            updateChordNotes(selectedChord.root, selectedChord.type);
-        }
     };
 
 //=================================================================================================================//
