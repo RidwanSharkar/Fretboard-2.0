@@ -80,7 +80,7 @@ button:hover {
   align-items: center;
   justify-content: center;
   margin-top: 20px;
-  margin-bottom: 80px;
+  margin-bottom: 60px;
 }
 
 .circle-button {
@@ -106,6 +106,7 @@ button:hover {
   width: 80px;  
   margin: 0 5px; 
   text-align: center;  
+  font-weight: bold;
 }
 
 .label {
@@ -134,17 +135,25 @@ button:hover {
 
 /*====================================================================================*/
 
+.key-display {
+  font-size: 20px;
+  color: #FFF; /* Chords in Key Text */
+  margin: 10px 0;
+  text-align: center;
+}
+/*====================================================================================*/
+
 .fretboard-container {
   display: flex;
-  justify-content: center; /* Center the content horizontally */
-  align-items: flex-start; /* Align children to the top */
-  width: 100%; /* Full width of the container */
-  height: auto; /* Height as needed or fixed height */
-  padding: 20px; /* Padding around the content */
+  justify-content: center; 
+  align-items: flex-start; 
+  width: 100%; 
+  height: auto; 
+  padding: 20px; 
 }
 
 .fretboard {
-  position: relative; /* Positioning context for adjustments */
+  position: relative; 
   padding: 10px;
 }
 
@@ -155,5 +164,5 @@ button:hover {
 }
 
 .toggle-button {
-  margin-bottom: 10px; /* Space between toggle buttons */
+  margin-bottom: 10px; 
 }

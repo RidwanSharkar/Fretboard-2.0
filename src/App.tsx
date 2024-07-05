@@ -18,7 +18,7 @@ const App: React.FC = () =>
     const [includeSeventh, setIncludeSeventh] = useState(false);
     const [includeNinth, setIncludeNinth] = useState(false);
     const [isMinorKey, setIsMinorKey] = useState(false);
-//=================================================================================================================//
+
     const handleKeySelection = (key: string, isMinor: boolean) => {
         console.log("Selected Key: ", key, " Is Minor: ", isMinor);
         setSelectedKey(key);
@@ -42,7 +42,7 @@ const App: React.FC = () =>
                     {pattern.map((shift, index) => {
                         const chordRoot = notes[(rootIndex + shift) % 12];
                         const type = types[index];
-                        // Modify type string for display
+                        // BUTTON TEXT CONVERT
                         const displayType = type === 'diminished' ? 'dim' : type;
                         const isSelectedChord = selectedChord && selectedChord.root === chordRoot && selectedChord.type === type;
     
@@ -52,7 +52,7 @@ const App: React.FC = () =>
                                 key={`${chordRoot}-${type}`}
                                 onClick={() => handleChordSelection(chordRoot, type as keyof typeof chordFormulas)}
                             >
-                                {`${chordRoot} ${displayType}`} {/* Display modified type */}
+                                {`${chordRoot} ${displayType}`}
                             </button>
                         );
                     })}
@@ -67,7 +67,7 @@ const App: React.FC = () =>
     };
 
 
-//=================================================================================================================//    
+    //=================================================================================================================//    
 
     const handleChordSelection = (root: string, type: keyof typeof chordFormulas) => 
     {
@@ -83,8 +83,9 @@ const App: React.FC = () =>
         setIncludeNinth(false);
     };
 
-//=================================================================================================================//
+    //=================================================================================================================//
 
+    /* TOGGLING BUGGED, merge with chord change */
     const toggleSeventh = () => {
         if (selectedChord) {
             setIncludeNinth(false);  
@@ -101,7 +102,8 @@ const App: React.FC = () =>
         }
     };
 
-//=================================================================================================================//
+    //=================================================================================================================//
+
     const updateChordNotes = (root: string, type: keyof typeof chordFormulas) => 
     {
       const rootIndex = notes.indexOf(root);
@@ -126,7 +128,7 @@ const App: React.FC = () =>
       setActiveNotes([...baseIntervals, ...additionalIntervals]);
     };
 
-//=================================================================================================================//
+    //=================================================================================================================//
 
     const radiusMajor = 175;
     const radiusMinor = 120;
@@ -145,7 +147,7 @@ const App: React.FC = () =>
                     const xMinor = radiusMinor * Math.cos(angleMinor * Math.PI / 180);
                     const yMinor = radiusMinor * Math.sin(angleMinor * Math.PI / 180);
                     const isSelectedMinor = selectedKey === key && isMinorKey;
-
+    
         return (
             <React.Fragment key={key}>
                 <button
@@ -162,14 +164,12 @@ const App: React.FC = () =>
                 >
                     {key} Minor
                 </button>
-            </React.Fragment>
-        );
-    })}
-    <div className="circle-text">Select Key</div>
-</div>
+            </React.Fragment>);})}
 
 
-
+            <div className="circle-text">Select Key</div>
+        </div>
+            <div className="key-display">Chords in the Key of {selectedKey} {isMinorKey ? 'Minor' : 'Major'} </div>
 
 
                 {/* Chord Buttons */}
