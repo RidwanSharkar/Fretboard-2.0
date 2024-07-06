@@ -178,14 +178,22 @@ const App: React.FC = () =>
                 </div>
 
                 {/* Fretboard and toggles container */}
-                <div className="fretboard-container"> 
-                <Fretboard notes={constructFretboard(6, 15)} activeNotes={activeNotes} />
-                <div className="toggle-buttons">
-                    <button onClick={toggleSeventh} className="toggle-button">7th</button>
-                    <button onClick={toggleNinth} className="toggle-button">9th</button>
+                <div className="fretboard-container">
+                    <Fretboard notes={constructFretboard(6, 16)} activeNotes={activeNotes} />
+                    <div className="toggle-buttons">
+                        <button onClick={toggleSeventh} className="toggle-button">7th</button>
+                        <button onClick={toggleNinth} className="toggle-button">9th</button>
+                    </div>
                 </div>
-            </div>
 
+  
+
+                <div className="fret-labels">
+                        {Array.from({ length: 16 }).map((_, index) => (  
+                            <div className="fret-label" key={index}>{index}</div>
+                        ))}
+                    </div>
+        
             </header>
         </div>
     );

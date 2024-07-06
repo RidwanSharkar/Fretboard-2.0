@@ -2,7 +2,7 @@
 
 .App {
   text-align: center;
-  padding-top: 50px;
+  padding-top: 20px;
 }
 
 body {
@@ -141,21 +141,8 @@ button:hover {
   margin: 10px 0;
   text-align: center;
 }
+
 /*====================================================================================*/
-
-.fretboard-container {
-  display: flex;
-  justify-content: center; 
-  align-items: flex-start; 
-  width: 100%; 
-  height: auto; 
-  padding: 20px; 
-}
-
-.fretboard {
-  position: relative; 
-  padding: 10px;
-}
 
 .toggle-buttons {
   display: flex;
@@ -166,3 +153,40 @@ button:hover {
 .toggle-button {
   margin-bottom: 10px; 
 }
+
+/*====================================================================================*/
+
+.fretboard-container {
+  display: flex;
+  justify-content: center; 
+  align-items: flex-start; 
+  width: 100%; 
+  height: auto; 
+  padding: 20px; 
+  padding-bottom: 0px;
+}
+
+.fretboard {
+  position: relative; 
+  padding: 10px;
+}
+
+.fret-label {
+  width: 44px; /* Ensure this matches the width of .fret */
+  text-align: center; /* Center the label text under each fret */
+  font-size: 12px;
+  
+}
+
+.fret-labels {
+  display: flex; /* This will line up the labels in a row */
+  justify-content: center; /* Center labels horizontally */
+  margin-left: 9px; /* Space between fretboard and labels */
+}
+
+
+
+
+
+
+
