@@ -19,6 +19,13 @@ const App: React.FC = () =>
     const [includeNinth, setIncludeNinth] = useState(false);
     const [isMinorKey, setIsMinorKey] = useState(false);
 
+//=================================================================================================================//
+    const [highlightAll, setHighlightAll] = useState(false);
+    const toggleHighlightAll = () => {
+        setHighlightAll(!highlightAll);
+      };
+//=================================================================================================================//
+
     const handleKeySelection = (key: string, isMinor: boolean) => {
         console.log("Selected Key: ", key, " Is Minor: ", isMinor);
         setSelectedKey(key);
@@ -179,10 +186,11 @@ const App: React.FC = () =>
 
                 {/* Fretboard and toggles container */}
                 <div className="fretboard-container">
-                    <Fretboard notes={constructFretboard(6, 16)} activeNotes={activeNotes} />
+                    <Fretboard notes={constructFretboard(6, 16)} activeNotes={activeNotes} highlightAll={highlightAll} />
                     <div className="toggle-buttons">
                         <button onClick={toggleSeventh} className="toggle-button">7th</button>
                         <button onClick={toggleNinth} className="toggle-button">9th</button>
+                        <button onClick={toggleHighlightAll} className={`toggle-button ${highlightAll ? 'active' : ''}`}>All</button>
                     </div>
                 </div>
 

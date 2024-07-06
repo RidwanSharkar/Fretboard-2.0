@@ -4,7 +4,8 @@ import { GuitarNote as Note } from '../models/Note';
 
 interface FretboardProps {
   notes: Note[][];
-  activeNotes: { note: string; interval: string }[]; 
+  activeNotes: { note: string; interval: string }[];
+  highlightAll: boolean;
 }
 
 const noteColors: { [key: string]: string } = {
@@ -22,7 +23,7 @@ const noteColors: { [key: string]: string } = {
   B: '#e6d06f'
 };
 
-const Fretboard: React.FC<FretboardProps> = ({ notes, activeNotes }) => {
+const Fretboard: React.FC<FretboardProps> = ({ notes, activeNotes, highlightAll }) => {
   const [activeNote, setActiveNote] = useState<Note | null>(null);
 
   const handleFretClick = (note: Note) => {
@@ -38,8 +39,9 @@ const Fretboard: React.FC<FretboardProps> = ({ notes, activeNotes }) => {
       {notes.map((stringNotes, stringIndex) => (
         <div key={stringIndex} className="string">
           {stringNotes.map((note, fretIndex) => {
-            const isActive = activeNotes.some(an => an.note === note.name);
+            const isActive = highlightAll || activeNotes.some(an => an.note === note.name);
             const activeDetail = activeNotes.find(an => an.note === note.name);
+            
 
             return (
               <div
