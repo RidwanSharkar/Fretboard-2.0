@@ -92,7 +92,7 @@ const App: React.FC = () =>
 
     //=================================================================================================================//
 
-    /* TOGGLING BUGGED, merge with chord change */
+    /* TOGGLING somewhat bugged, merge with chord change */
     const toggleSeventh = () => {
         if (selectedChord) {
             setIncludeNinth(false);  
@@ -111,29 +111,43 @@ const App: React.FC = () =>
 
     //=================================================================================================================//
 
-    const updateChordNotes = (root: string, type: keyof typeof chordFormulas) => 
-    {
-      const rootIndex = notes.indexOf(root);
+    const updateChordNotes = (root: string, type: keyof typeof chordFormulas) => {
+        const rootIndex = notes.indexOf(root);
+        
+        // Dominant 7th condition
+        const fifthDegreeIndex = (notes.indexOf(selectedKey) + 7) % 12; // V degree in major
+        const seventhDegreeIndex = (notes.indexOf(selectedKey) + 10) % 12; // VII degree in minor
       
-      const baseIntervals = chordFormulas[type].map((interval, index) => 
-      ({
-        note: notes[(rootIndex + interval) % 12],
-        interval: ['R', '3rd', '5th'][index % 3]
-      }));
-    
-      let additionalIntervals = [];
-      if (includeSeventh) {
-        const isMajor7 = type === 'major7' || (type === 'major' && !chordFormulas[type].includes(10));
-        additionalIntervals.push({
-          note: notes[(rootIndex + (isMajor7 ? 11 : 10)) % 12],
-          interval: '7th'
-        });
-      }
-      if (includeNinth) {
-        additionalIntervals.push({ note: notes[(rootIndex + 14) % 12], interval: '9th' });
-      }
-      setActiveNotes([...baseIntervals, ...additionalIntervals]);
-    };
+        const baseIntervals = chordFormulas[type].map((interval, index) => ({
+          note: notes[(rootIndex + interval) % 12],
+          interval: ['R', '3rd', '5th'][index % 3]
+        }));
+      
+        let additionalIntervals = [];
+      
+        const shouldUseFlatSeventh = (type === 'minor7' || type === 'dominant7' || type === 'diminished7') ||
+        (includeSeventh && (
+          (type === 'major' && (
+            (!isMinorKey && notes[rootIndex] === notes[fifthDegreeIndex]) ||
+            (isMinorKey && notes[rootIndex] === notes[seventhDegreeIndex])
+          )) ||
+          (type === 'minor' || type === 'diminished')
+        ));
+      
+
+        if (includeSeventh) {
+          additionalIntervals.push({
+            note: notes[(rootIndex + (shouldUseFlatSeventh ? 10 : 11)) % 12],
+            interval: '7th'
+          });
+        }
+      
+        if (includeNinth) {
+          additionalIntervals.push({ note: notes[(rootIndex + 14) % 12], interval: '9th' });
+        }
+      
+        setActiveNotes([...baseIntervals, ...additionalIntervals]);
+      };
 
     //=================================================================================================================//
 
