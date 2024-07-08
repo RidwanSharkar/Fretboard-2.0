@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+// components/FretboardComponent.tsx
+
+import React, { useState, useEffect } from 'react';
 import './Fretboard.css';
-import { GuitarNote as Note } from '../models/Note';
+import { GuitarNote as Note, ChordPosition  } from '../models/Note';
 
 interface FretboardProps {
   notes: Note[][];
   activeNotes: { note: string; interval: string }[];
   highlightAll: boolean;
+  activePositions: ChordPosition[];
+  clearActivePositions: () => void;
 }
 
 const noteColors: { [key: string]: string } = {
@@ -23,15 +27,25 @@ const noteColors: { [key: string]: string } = {
   B: '#e6d06f'
 };
 
-const Fretboard: React.FC<FretboardProps> = ({ notes, activeNotes, highlightAll }) => {
+const Fretboard: React.FC<FretboardProps> = ({ notes, activeNotes, highlightAll, activePositions, clearActivePositions }) => {
   const [activeNote, setActiveNote] = useState<Note | null>(null);
+
+  useEffect(() => {
+    clearActivePositions();  // Clear previous chord find
+  }, [activeNotes, clearActivePositions]);
 
   const handleFretClick = (note: Note) => {
     if (activeNote && activeNote.string === note.string && activeNote.fret === note.fret) {
-      setActiveNote(null); // untoggle
+      setActiveNote(null); // Untoggle
     } else {
-      setActiveNote(note);
+      setActiveNote(note); // Toggle
     }
+  };
+
+  const isActive = (string: number, fret: number) => {
+    return highlightAll ||
+           activeNotes.some(an => an.note === notes[string][fret].name) ||
+           activePositions.some(pos => pos.string === string && pos.fret === fret);
   };
 
   return (
@@ -39,21 +53,20 @@ const Fretboard: React.FC<FretboardProps> = ({ notes, activeNotes, highlightAll 
       {notes.map((stringNotes, stringIndex) => (
         <div key={stringIndex} className="string">
           {stringNotes.map((note, fretIndex) => {
-            const isActive = highlightAll || activeNotes.some(an => an.note === note.name);
+            const active = isActive(stringIndex, fretIndex);
             const activeDetail = activeNotes.find(an => an.note === note.name);
             
-
             return (
               <div
                 key={fretIndex}
-                className={`fret ${isActive ? 'active' : ''} ${fretIndex === 0 ? 'open-note' : ''}`}
+                className={`fret ${active ? 'active' : ''} ${fretIndex === 0 ? 'open-note' : ''}`}
                 onClick={() => handleFretClick(note)}
-                style={{ backgroundColor: isActive ? noteColors[note.name] : '#f5f5f5' }}
+                style={{ backgroundColor: active ? noteColors[note.name] : '#f5f5f5' }}
               >
-                <span className="note">{note.name}</span> {/* for note name centering */}
-                {isActive && (
+                <span className="note">{note.name}</span>
+                {active && (
                   <span className="note-label" style={{ position: 'absolute', top: '2px', left: '2px', fontSize: '8px', color: '#fff', fontWeight: 'bold' }}>
-                    {activeDetail?.interval} {/* top-leftedness */}
+                    {activeDetail ? activeDetail.interval : ''}
                   </span>
                 )}
               </div>

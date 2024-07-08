@@ -1,17 +1,21 @@
 // App.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import Fretboard from './components/Fretboard';
-import { constructFretboard } from './utils/fretboardUtils';
+import { constructFretboard, possibleChord } from './utils/fretboardUtils';
+import { GuitarNote, ChordPosition } from './models/Note';
 import { chordFormulas } from './utils/chordUtils';
 
-//=================================================================================================================//
+/*=================================================================================================================*/
 const notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'];
 const keys = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'C#', 'G#', 'D#', 'A#', 'F'];
-//=================================================================================================================//
+/*const intervals = ['R', 'm2', 'M2', 'm3', 'M3', 'P4', 'T', 'P5', 'm6', 'M6', 'm7', 'M7'];*/
+/*=================================================================================================================*/
 
 const App: React.FC = () => 
 {
+    const [fretboard, setFretboard] = useState<GuitarNote[][]>(() => constructFretboard(6, 16));
+
     const [activeNotes, setActiveNotes] = useState<{ note: string; interval: string }[]>([]);
     const [selectedKey, setSelectedKey] = useState('C');
     const [selectedChord, setSelectedChord] = useState<{ root: string; type: keyof typeof chordFormulas } | null>(null);
@@ -19,11 +23,57 @@ const App: React.FC = () =>
     const [includeNinth, setIncludeNinth] = useState(false);
     const [isMinorKey, setIsMinorKey] = useState(false);
 
+    const [currentChordIndex, setCurrentChordIndex] = useState(-1);
+    const [validChords, setValidChords] = useState<ChordPosition[][]>([]);
+    const [activePositions, setActivePositions] = useState<ChordPosition[]>([]);
+    const clearActivePositions = () => {
+        setActivePositions([]);
+      };
+    
+
+    /*-------------------------------------------------------------------------------------------------------------*/
+
+    const findAndHighlightChord = () => {
+        if (!selectedChord) {
+            console.log("No chord selected.");
+            return;
+        }
+    
+        const rootIndex = notes.indexOf(selectedChord.root);
+        const noteNames = chordFormulas[selectedChord.type].map(interval => notes[(rootIndex + interval) % 12]);
+    
+        if (validChords.length === 0 || currentChordIndex === -1) {
+            console.log("Finding new chords for notes:", noteNames);
+            const newValidChords = possibleChord(fretboard, noteNames);
+            if (newValidChords.length > 0) {
+                setValidChords(newValidChords);
+                setCurrentChordIndex(0); 
+                setActivePositions(newValidChords[0]);
+                setActiveNotes([]); 
+            } else {
+                console.log("No valid chords found.");
+            }
+        } else {
+            const nextIndex = (currentChordIndex + 1) % validChords.length;
+            setCurrentChordIndex(nextIndex);
+            setActivePositions(validChords[nextIndex]);
+        }
+    };
+    
+    useEffect(() => {
+        console.log("Updating active positions for index:", currentChordIndex);
+        if (validChords.length > 0 && currentChordIndex >= 0) {
+            setActivePositions(validChords[currentChordIndex]);
+        }
+    }, [validChords, currentChordIndex]);
+
 //=================================================================================================================//
+
     const [highlightAll, setHighlightAll] = useState(false);
     const toggleHighlightAll = () => {
         setHighlightAll(!highlightAll);
       };
+      
 //=================================================================================================================//
 
     const handleKeySelection = (key: string, isMinor: boolean) => {
@@ -73,7 +123,6 @@ const App: React.FC = () =>
         );
     };
 
-
     //=================================================================================================================//    
 
     const handleChordSelection = (root: string, type: keyof typeof chordFormulas) => 
@@ -81,18 +130,21 @@ const App: React.FC = () =>
         resetToggles();
         setSelectedChord({ root, type });
         setActiveNotes([]);
+        setValidChords([]); // Clearing "Find"
+        setCurrentChordIndex(-1); 
         updateChordNotes(root, type);
+        
     };  
 
+    //=================================================================================================================//
+
+    /* TOGGLING somewhat bugged, merge with chord change */
     const resetToggles = () => 
     {
         setIncludeSeventh(false);
         setIncludeNinth(false);
     };
 
-    //=================================================================================================================//
-
-    /* TOGGLING somewhat bugged, merge with chord change */
     const toggleSeventh = () => {
         if (selectedChord) {
             setIncludeNinth(false);  
@@ -115,7 +167,7 @@ const App: React.FC = () =>
         const rootIndex = notes.indexOf(root);
         
         // Dominant 7th condition
-        const fifthDegreeIndex = (notes.indexOf(selectedKey) + 7) % 12; // V degree in major
+        const fifthDegreeIndex = (notes.indexOf(selectedKey) + 7) % 12; // V degree in major 
         const seventhDegreeIndex = (notes.indexOf(selectedKey) + 10) % 12; // VII degree in minor
       
         const baseIntervals = chordFormulas[type].map((interval, index) => ({
@@ -200,15 +252,15 @@ const App: React.FC = () =>
 
                 {/* Fretboard and toggles container */}
                 <div className="fretboard-container">
-                    <Fretboard notes={constructFretboard(6, 16)} activeNotes={activeNotes} highlightAll={highlightAll} />
+                    <Fretboard notes={fretboard} activeNotes={activeNotes} highlightAll={highlightAll} activePositions={activePositions} clearActivePositions={clearActivePositions}/>
                     <div className="toggle-buttons">
                         <button onClick={toggleSeventh} className="toggle-button">7th</button>
                         <button onClick={toggleNinth} className="toggle-button">9th</button>
                         <button onClick={toggleHighlightAll} className={`toggle-button ${highlightAll ? 'active' : ''}`}>All</button>
+                        <button onClick={findAndHighlightChord} className="toggle-button">Find</button>
                     </div>
                 </div>
 
-  
 
                 <div className="fret-labels">
                         {Array.from({ length: 16 }).map((_, index) => (  
