@@ -169,6 +169,7 @@ button:hover {
 .fretboard {
   position: relative; 
   padding: 10px;
+  padding-bottom: 0px;
 }
 
 /* NEEDS TO BE ALIGNED BETTER to fretboard dynamically */
@@ -182,7 +183,7 @@ button:hover {
 .fret-labels {
   display: flex; 
   justify-content: center; 
-  margin-left: 9px;
+  margin-left: 0px;
 }
 
 
