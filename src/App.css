@@ -119,7 +119,7 @@ button:hover {
 }
 
 .selected {
-  background-color: #82d3ff; /* Selection Color */
+  background-color: #4CAF50; /* Selection Color */
   color: white;
 }
 

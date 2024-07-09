@@ -41,10 +41,23 @@ const App: React.FC = () =>
         const rootIndex = notes.indexOf(selectedChord.root);
         let noteNames = chordFormulas[selectedChord.type].map(interval => notes[(rootIndex + interval) % 12]);
         
+        const fifthDegreeIndex = (notes.indexOf(selectedKey) + 7) % 12; // V degree in major 
+        const seventhDegreeIndex = (notes.indexOf(selectedKey) + 10) % 12; // VII degree in minor
+    
+        const shouldUseFlatSeventh = (selectedChord.type === 'minor7' || selectedChord.type === 'dominant7' || selectedChord.type === 'diminished7') ||
+            (includeSeventh && (
+                (selectedChord.type === 'major' && (
+                    (!isMinorKey && notes[rootIndex] === notes[fifthDegreeIndex]) ||
+                    (isMinorKey && notes[rootIndex] === notes[seventhDegreeIndex])
+                )) ||
+                (selectedChord.type === 'minor' || selectedChord.type === 'diminished')
+            ));
+    
         if (includeSeventh) {
-            const seventhInterval = selectedChord.type.includes('minor') ? 10 : 11;
+            const seventhInterval = shouldUseFlatSeventh ? 10 : 11;
             noteNames.push(notes[(rootIndex + seventhInterval) % 12]);
         }
+    
         if (includeNinth) {
             noteNames.push(notes[(rootIndex + 14) % 12]);
         }
@@ -146,7 +159,6 @@ const App: React.FC = () =>
 
     //=================================================================================================================//
 
-    /* TOGGLING somewhat bugged, merge with chord change */
     const resetToggles = () => 
     {
         setIncludeSeventh(false);
