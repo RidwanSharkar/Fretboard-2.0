@@ -27,21 +27,22 @@ const noteColors: { [key: string]: string } = {
   B: '#e6d06f'
 };
 
-const Fretboard: React.FC<FretboardProps> = ({ notes, activeNotes, highlightAll, activePositions, clearActivePositions }) => {
+const Fretboard: React.FC<FretboardProps> = ({
+  notes, activeNotes, highlightAll, activePositions, clearActivePositions
+}) => {
   const [activeNote, setActiveNote] = useState<Note | null>(null);
 
   useEffect(() => {
-    clearActivePositions();  // Clear previous chord find
+    clearActivePositions();  // Ensure clear operation is invoked appropriately
   }, [activeNotes, clearActivePositions]);
 
   const handleFretClick = (note: Note) => {
-    if (activeNote && activeNote.string === note.string && activeNote.fret === note.fret) {
-      setActiveNote(null); // Untoggle
-    } else {
-      setActiveNote(note); // Toggle
-    }
+    setActiveNote(prevNote =>
+      prevNote && prevNote.string === note.string && prevNote.fret === note.fret ? null : note
+    );
   };
 
+  // Improved isActive function to check active notes and positions
   const isActive = (string: number, fret: number) => {
     return highlightAll ||
            activeNotes.some(an => an.note === notes[string][fret].name) ||
@@ -55,7 +56,6 @@ const Fretboard: React.FC<FretboardProps> = ({ notes, activeNotes, highlightAll,
           {stringNotes.map((note, fretIndex) => {
             const active = isActive(stringIndex, fretIndex);
             const activeDetail = activeNotes.find(an => an.note === note.name);
-            
             return (
               <div
                 key={fretIndex}

@@ -1,5 +1,5 @@
 // utils/fretboardUtils.ts
-import { GuitarNote, ChordPosition } from '../models/Note';
+import { GuitarNote, ChordNode, ChordPosition } from '../models/Note';
 
 export const constructFretboard = (strings: number, frets: number): GuitarNote[][] => {
   const notes: string[] = ['E', 'B', 'G', 'D', 'A', 'E']; // Standard tuning for a 6-string guitar
@@ -68,14 +68,14 @@ function isValidChordPosition(frets: number[], currentString: number, currentFre
     }
   }
 
-  // Check string distance
-  if (maxString - minString > 2 || currentString - minString > 2 || maxString - currentString > 2) {
+  // String distance
+  if (maxString - minString > 3 || currentString - minString > 3 || maxString - currentString > 3) {
     return false;
   }
 
-  // Check fret distance
+  // Fret distance
   for (let i = 0; i < 6; i++) {
-    if (frets[i] !== -1 && Math.abs(currentFret - frets[i]) > 4) {
+    if (frets[i] !== -1 && Math.abs(currentFret - frets[i]) > 3) {
       return false;
     }
   }

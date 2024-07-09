@@ -39,25 +39,34 @@ const App: React.FC = () =>
         }
     
         const rootIndex = notes.indexOf(selectedChord.root);
-        const noteNames = chordFormulas[selectedChord.type].map(interval => notes[(rootIndex + interval) % 12]);
-    
-        if (validChords.length === 0 || currentChordIndex === -1) {
-            console.log("Finding new chords for notes:", noteNames);
-            const newValidChords = possibleChord(fretboard, noteNames);
-            if (newValidChords.length > 0) {
-                setValidChords(newValidChords);
-                setCurrentChordIndex(0); 
-                setActivePositions(newValidChords[0]);
-                setActiveNotes([]); 
-            } else {
-                console.log("No valid chords found.");
-            }
-        } else {
-            const nextIndex = (currentChordIndex + 1) % validChords.length;
-            setCurrentChordIndex(nextIndex);
-            setActivePositions(validChords[nextIndex]);
+        let noteNames = chordFormulas[selectedChord.type].map(interval => notes[(rootIndex + interval) % 12]);
+        
+        if (includeSeventh) {
+            const seventhInterval = selectedChord.type.includes('minor') ? 10 : 11;
+            noteNames.push(notes[(rootIndex + seventhInterval) % 12]);
         }
-    };
+        if (includeNinth) {
+            noteNames.push(notes[(rootIndex + 14) % 12]);
+        }
+
+    if (validChords.length === 0 || currentChordIndex === -1) {
+        console.log("Finding new chords for notes:", noteNames);
+        const newValidChords = possibleChord(fretboard, noteNames);
+        if (newValidChords.length > 0) {
+            setValidChords(newValidChords);
+            setCurrentChordIndex(0);
+            setActivePositions(newValidChords[0]);
+            setActiveNotes([]); 
+        } else {
+            console.log("No valid chords found.");
+        }
+    } else {
+        // Cycle
+        const nextIndex = (currentChordIndex + 1) % validChords.length;
+        setCurrentChordIndex(nextIndex);
+        setActivePositions(validChords[nextIndex]);
+    }
+};
     
     useEffect(() => {
         console.log("Updating active positions for index:", currentChordIndex);
@@ -131,7 +140,7 @@ const App: React.FC = () =>
         setActiveNotes([]);
         setValidChords([]); // Clearing "Find"
         setCurrentChordIndex(-1); 
-        updateChordNotes(root, type);
+        updateChordNotes(root, type, includeSeventh, includeNinth);
         
     };  
 
@@ -145,60 +154,60 @@ const App: React.FC = () =>
     };
 
     const toggleSeventh = () => {
-        if (selectedChord) {
-            setIncludeNinth(false);  
-            setIncludeSeventh(!includeSeventh); 
-            updateChordNotes(selectedChord.root, selectedChord.type);
-        }
+        setIncludeSeventh(prevSeventh => !prevSeventh);
+        setIncludeNinth(false); 
     };
-
+    
     const toggleNinth = () => {
-        if (selectedChord) {
-            setIncludeSeventh(false);  
-            setIncludeNinth(!includeNinth);  
-            updateChordNotes(selectedChord.root, selectedChord.type);
-        }
+        setIncludeNinth(prevNinth => !prevNinth);
+        setIncludeSeventh(false);
     };
+    
+    useEffect(() => {
+        if (selectedChord) {
+            updateChordNotes(selectedChord.root, selectedChord.type, includeSeventh, includeNinth);
+        }
+    }, [selectedChord, includeSeventh, includeNinth]);
+    
 
     //=================================================================================================================//
 
-    const updateChordNotes = (root: string, type: keyof typeof chordFormulas) => {
+    const updateChordNotes = (root: string, type: keyof typeof chordFormulas, includeSeventh: boolean, includeNinth: boolean) => {
         const rootIndex = notes.indexOf(root);
-        
+    
         // Dominant 7th condition
         const fifthDegreeIndex = (notes.indexOf(selectedKey) + 7) % 12; // V degree in major 
         const seventhDegreeIndex = (notes.indexOf(selectedKey) + 10) % 12; // VII degree in minor
-      
+    
         const baseIntervals = chordFormulas[type].map((interval, index) => ({
-          note: notes[(rootIndex + interval) % 12],
-          interval: ['R', '3rd', '5th'][index % 3]
+            note: notes[(rootIndex + interval) % 12],
+            interval: ['R', '3rd', '5th'][index % 3]
         }));
-      
+    
         let additionalIntervals = [];
-      
+    
         const shouldUseFlatSeventh = (type === 'minor7' || type === 'dominant7' || type === 'diminished7') ||
-        (includeSeventh && (
-          (type === 'major' && (
-            (!isMinorKey && notes[rootIndex] === notes[fifthDegreeIndex]) ||
-            (isMinorKey && notes[rootIndex] === notes[seventhDegreeIndex])
-          )) ||
-          (type === 'minor' || type === 'diminished')
-        ));
-      
-
+            (includeSeventh && (
+                (type === 'major' && (
+                    (!isMinorKey && notes[rootIndex] === notes[fifthDegreeIndex]) ||
+                    (isMinorKey && notes[rootIndex] === notes[seventhDegreeIndex])
+                )) ||
+                (type === 'minor' || type === 'diminished')
+            ));
+    
         if (includeSeventh) {
-          additionalIntervals.push({
-            note: notes[(rootIndex + (shouldUseFlatSeventh ? 10 : 11)) % 12],
-            interval: '7th'
-          });
+            additionalIntervals.push({
+                note: notes[(rootIndex + (shouldUseFlatSeventh ? 10 : 11)) % 12],
+                interval: '7th'
+            });
         }
-      
+    
         if (includeNinth) {
-          additionalIntervals.push({ note: notes[(rootIndex + 14) % 12], interval: '9th' });
+            additionalIntervals.push({ note: notes[(rootIndex + 14) % 12], interval: '9th' });
         }
-      
+    
         setActiveNotes([...baseIntervals, ...additionalIntervals]);
-      };
+    };
 
     //=================================================================================================================//
 
@@ -253,8 +262,8 @@ const App: React.FC = () =>
                 <div className="fretboard-container">
                     <Fretboard notes={fretboard} activeNotes={activeNotes} highlightAll={highlightAll} activePositions={activePositions} clearActivePositions={clearActivePositions}/>
                     <div className="toggle-buttons">
-                        <button onClick={toggleSeventh} className="toggle-button">7th</button>
-                        <button onClick={toggleNinth} className="toggle-button">9th</button>
+                        <button onClick={toggleSeventh} className={`toggle-button ${includeSeventh ? 'active' : ''}`}>7th</button>
+                        <button onClick={toggleNinth} className={`toggle-button ${includeNinth ? 'active' : ''}`}>9th</button>
                         <button onClick={toggleHighlightAll} className={`toggle-button ${highlightAll ? 'active' : ''}`}>All</button>
                         <button onClick={findAndHighlightChord} className="toggle-button">Find</button>
                     </div>
