@@ -5,6 +5,7 @@ import Fretboard from './components/Fretboard';
 import { constructFretboard, possibleChord } from './utils/fretboardUtils';
 import { GuitarNote, ChordPosition } from './models/Note';
 import { chordFormulas } from './utils/chordUtils';
+import { playNote } from './utils/midiUtils';
 
 /*=================================================================================================================*/
 const notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'];
@@ -30,6 +31,8 @@ const App: React.FC = () =>
         setActivePositions([]);
       };
     
+    const [isPlayable, setIsPlayable] = useState(false); // MIDI
+
     /*-------------------------------------------------------------------------------------------------------------*/
 
     const findAndHighlightChord = () => {
@@ -63,24 +66,37 @@ const App: React.FC = () =>
             noteNames.push(notes[(rootIndex + 14) % 12]);
         }
 
-    if (validChords.length === 0 || currentChordIndex === -1) {
-        console.log("Finding new chords for notes:", noteNames);
-        const newValidChords = possibleChord(fretboard, noteNames);
-        if (newValidChords.length > 0) {
-            setValidChords(newValidChords);
-            setCurrentChordIndex(0);
-            setActivePositions(newValidChords[0]);
-            setActiveNotes([]); 
-        } else {
-            console.log("No valid chords found.");
+        if (validChords.length === 0 || currentChordIndex === -1) {
+            const newValidChords = possibleChord(fretboard, noteNames);
+            if (newValidChords.length > 0) {
+                setValidChords(newValidChords);
+                setCurrentChordIndex(0);
+                setActivePositions(newValidChords[0]);
+                setActiveNotes([]);
+                setIsPlayable(true);
+            } else {
+                console.log("No valid chords found.");
+                setIsPlayable(false);
+            }
+        } 
+        else {
+            // Cycle
+            const nextIndex = (currentChordIndex + 1) % validChords.length;
+            setCurrentChordIndex(nextIndex);
+            setActivePositions(validChords[nextIndex]);
         }
-    } else {
-        // Cycle
-        const nextIndex = (currentChordIndex + 1) % validChords.length;
-        setCurrentChordIndex(nextIndex);
-        setActivePositions(validChords[nextIndex]);
-    }
-};
+    };
+
+    const playChord = () => {
+        if (activePositions.length > 0) {
+            activePositions.forEach((pos, index) => {
+                const staggerTime = index * 0.03; // Stagger 50ms
+                playNote(pos.string, pos.fret, fretboard, '8n', staggerTime);
+            });
+        } else {
+            console.log("No chord positions active to play.");
+        }
+    };
     
     useEffect(() => {
         console.log("Updating active positions for index:", currentChordIndex);
@@ -279,6 +295,7 @@ const App: React.FC = () =>
                         <button onClick={toggleNinth} className={`toggle-button ${includeNinth ? 'active' : ''}`}>9th</button>
                         <button onClick={toggleHighlightAll} className={`toggle-button ${highlightAll ? 'active' : ''}`}>All</button>
                         <button onClick={findAndHighlightChord} className="toggle-button">Find</button>
+                        <button onClick={playChord} disabled={!isPlayable}>Play</button>
                     </div>
                 </div>
 

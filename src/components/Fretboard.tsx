@@ -1,4 +1,4 @@
-// components/FretboardComponent.tsx
+// components/Fretboard.tsx
 
 import React, { useState, useEffect } from 'react';
 import './Fretboard.css';
