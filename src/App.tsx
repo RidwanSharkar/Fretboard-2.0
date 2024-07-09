@@ -38,6 +38,7 @@ const App: React.FC = () =>
             return;
         }
     
+        /* merge function from updateChordNotes */
         const rootIndex = notes.indexOf(selectedChord.root);
         let noteNames = chordFormulas[selectedChord.type].map(interval => notes[(rootIndex + interval) % 12]);
         

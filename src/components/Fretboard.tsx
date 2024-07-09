@@ -33,7 +33,7 @@ const Fretboard: React.FC<FretboardProps> = ({
   const [activeNote, setActiveNote] = useState<Note | null>(null);
 
   useEffect(() => {
-    clearActivePositions();  // Ensure clear operation is invoked appropriately
+    clearActivePositions(); 
   }, [activeNotes, clearActivePositions]);
 
   const handleFretClick = (note: Note) => {
@@ -42,7 +42,6 @@ const Fretboard: React.FC<FretboardProps> = ({
     );
   };
 
-  // Improved isActive function to check active notes and positions
   const isActive = (string: number, fret: number) => {
     return highlightAll ||
            activeNotes.some(an => an.note === notes[string][fret].name) ||
