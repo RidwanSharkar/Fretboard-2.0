@@ -1,6 +1,7 @@
 // utils/fretboardUtils.ts
 import { GuitarNote, ChordNode, ChordPosition } from '../models/Note';
 
+
 export const constructFretboard = (strings: number, frets: number): GuitarNote[][] => {
   const notes: string[] = ['E', 'B', 'G', 'D', 'A', 'E']; // Standard tuning for a 6-string guitar
   const semitones = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];

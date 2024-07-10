@@ -159,6 +159,18 @@ button:hover {
   color: white; 
 }
 
+.toggle-buttons .toggle-button {
+  margin-bottom: 10px;
+}
+
+button:disabled {
+  background-color: #7c7c7c; /* disabled colored */
+  color: #cccccc;
+  cursor: not-allowed; /* X hover cursor */
+}
+
+
+
 /*====================================================================================*/
 
 .fretboard-container {
@@ -192,9 +204,39 @@ button:hover {
   margin-left: 0px;
 }
 
+/*====================================================================================*/
 
+.chord-and-play-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
 
+.chord-buttons, .play-buttons {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
 
+.chord-buttons button, .play-buttons button {
+  width: 80px;
+  margin: 0 5px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.play-buttons {
+  margin-top: 10px;
+}
+
+.play-buttons button {
+  background-color: #77C3EC; 
+}
+
+.play-buttons button:hover {
+  background-color: #96c9ff;
+}
 
 
 

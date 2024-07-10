@@ -1,9 +1,15 @@
-// chordUtils.ts
+// src/utils/chordUtils.ts
 
 import { Chord } from '../models/Chord';
-import { GuitarNote, ChordNode } from '../models/Note';
+import { GuitarNote } from '../models/Note';
 
-type ChordType = 'major' | 'minor' | 'dominant7' | 'diminished' | 'diminished7' | 'major7' | 'minor7' | 'minor9' | 'minoradd9' | 'major9' | 'majoradd9' | 'augmented';
+export interface ChordInfo {
+  root: string;
+  type: ChordType;
+}
+export const notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'];
+
+export type ChordType = 'major' | 'minor' | 'dominant7' | 'diminished' | 'diminished7' | 'major7' | 'minor7' | 'minor9' | 'minoradd9' | 'major9' | 'majoradd9' | 'augmented';
 
 export const chordFormulas: { [key in ChordType]: number[] } = {
   major: [0, 4, 7],
@@ -26,7 +32,3 @@ export const generateChordPositions = (chord: Chord, fretboard: GuitarNote[][]):
   const notePositions: GuitarNote[] = [];
   return notePositions;
 };
-
-
-
-
