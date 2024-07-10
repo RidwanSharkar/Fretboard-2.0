@@ -28,24 +28,23 @@ const getNoteFromPosition = (string: number, fret: number, fretboard: GuitarNote
 const synth = new Tone.PluckSynth({
     attackNoise: 0.5,  
     dampening: 3500,   
-    resonance: 0.95   
+    resonance: 0.98   
 }).toDestination();
 
 const reverb = new Tone.Reverb({
-    decay: 2.5,   
+    decay: 4.0,   
     preDelay: 0.01
 }).toDestination();
 synth.connect(reverb);
 
 const compressor = new Tone.Compressor({
-    threshold: -20,
-    ratio: 4,
+    threshold: -24,
+    ratio: 6,
     attack: 0.1,
-    release: 0.1
+    release: 0.35
 }).toDestination();
 synth.connect(compressor);
 
-/*
-const delay = new Tone.FeedbackDelay("8n", 0.5).toDestination();
+
+const delay = new Tone.FeedbackDelay("32n", 0.5).toDestination();
 synth.connect(delay);
-*/

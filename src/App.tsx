@@ -89,8 +89,15 @@ const App: React.FC = () =>
 
     const playChord = () => {
         if (activePositions.length > 0) {
-            activePositions.forEach((pos, index) => {
-                const staggerTime = index * 0.03; // Stagger 50ms
+            const sortedPositions = activePositions.sort((a, b) => {
+                if (a.string === b.string) {
+                    return a.fret - b.fret;  // Sort by fret when on the same string***
+                }
+                return b.string - a.string;  // Sort by string in reverse order
+            });
+    
+            sortedPositions.forEach((pos, index) => {
+                const staggerTime = index * 0.05; // stagger time for strummung
                 playNote(pos.string, pos.fret, fretboard, '8n', staggerTime);
             });
         } else {
