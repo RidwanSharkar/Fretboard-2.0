@@ -4,7 +4,7 @@ import './App.css';
 import Fretboard from './components/Fretboard';
 import { constructFretboard, possibleChord } from './utils/fretboardUtils';
 import { GuitarNote, ChordPosition } from './models/Note';
-import { chordFormulas, ChordType, ChordInfo } from './utils/chordUtils';
+import { chordFormulas } from './utils/chordUtils';
 import { playNote } from './utils/midiUtils';
 
 /*=================================================================================================================*/
@@ -15,7 +15,7 @@ const keys = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'C#', 'G#', 'D#', 'A#', 'F'];
 
 const App: React.FC = () => 
 {
-    const [fretboard, setFretboard] = useState<GuitarNote[][]>(() => constructFretboard(6, 16));
+    const [fretboard ] = useState<GuitarNote[][]>(() => constructFretboard(6, 16));
     const [activeNotes, setActiveNotes] = useState<{ note: string; interval: string }[]>([]);
     const [selectedKey, setSelectedKey] = useState('C');
     const [selectedChord, setSelectedChord] = useState<{ root: string; type: keyof typeof chordFormulas } | null>(null);
@@ -67,6 +67,7 @@ const App: React.FC = () =>
 
 
     const findAndHighlightChord = useCallback(() => {
+        
         if (!selectedChord) {
             console.log("No chord selected.");
             return;
@@ -96,13 +97,13 @@ const App: React.FC = () =>
             if (newValidChords.length > 0) {
                 setValidChords(newValidChords);
                 setCurrentChordIndex(0);
-                setActivePositions(newValidChords[0]);
                 setActiveNotes([]);
+                setActivePositions(newValidChords[0]);
                 setIsPlayable(true);} 
             else {
                 console.log("No valid chords found.");
                 setIsPlayable(false);}
-        } 
+        }
         else {
             const nextIndex = (currentChordIndex + 1) % validChords.length;           // Cycle
             setCurrentChordIndex(nextIndex);
@@ -125,6 +126,7 @@ const App: React.FC = () =>
     /*=================================================================================================================*/
 
     const playRandomChordFromKey = useCallback((root: string, type: keyof typeof chordFormulas) => {
+        
         if (!selectedKey) return;
 
         const randomToggle = Math.floor(Math.random() * 2); // Random 7th or 9th
@@ -135,21 +137,63 @@ const App: React.FC = () =>
         setIncludeNinth(newIncludeNinth);
         setSelectedChord({ root, type });
 
+        setActiveNotes([]);
+        clearActivePositions();
 
-        setCurrentChordIndex(-1);
         updateChordNotes(root, type, includeSeventh, includeNinth);
+        findAndHighlightChord();
         const finds = Math.floor(Math.random() * 12) + 1;
         for (let i = 0; i < finds; i++) 
         {
-            findAndHighlightChord();  
+            cycleChords('next');  
         }
-    }, [selectedKey, includeSeventh, includeNinth, updateChordNotes, findAndHighlightChord]);
+        playChord();
+    }, [selectedKey, includeSeventh, includeNinth, updateChordNotes ]);
+        /*
+        const rootIndex = notes.indexOf(selectedChord.root);
+        let noteNames = chordFormulas[selectedChord.type].map(interval => notes[(rootIndex + interval) % 12]);
+        const fifthDegreeIndex = (notes.indexOf(selectedKey) + 7) % 12; // V degree in major 
+        const seventhDegreeIndex = (notes.indexOf(selectedKey) + 10) % 12; // VII degree in minor
+        const shouldUseFlatSeventh = (selectedChord.type === 'minor7' || selectedChord.type === 'dominant7' || selectedChord.type === 'diminished7') ||
+            (includeSeventh && (
+                (selectedChord.type === 'major' && (
+                    (!isMinorKey && notes[rootIndex] === notes[fifthDegreeIndex]) ||
+                    (isMinorKey && notes[rootIndex] === notes[seventhDegreeIndex])
+                )) ||
+                (selectedChord.type === 'minor' || selectedChord.type === 'diminished')
+            ));
+    
+        if (includeSeventh) {
+            const seventhInterval = shouldUseFlatSeventh ? 10 : 11;
+            noteNames.push(notes[(rootIndex + seventhInterval) % 12]);}
+        if (includeNinth) {
+            noteNames.push(notes[(rootIndex + 14) % 12]);}
 
+        if (validChords.length === 0 || currentChordIndex === -1) {
+            const newValidChords = possibleChord(fretboard, noteNames);
+            if (newValidChords.length > 0) {
+                setValidChords(newValidChords);
+                setCurrentChordIndex(0);
+                setActiveNotes([]);
+                setActivePositions(newValidChords[0]);
+                setIsPlayable(true);} 
+            else {
+                console.log("No valid chords found.");
+                setIsPlayable(false);}
+        } 
+        else {
+            const nextIndex = (currentChordIndex + 1) % validChords.length;           // Cycle
+            setCurrentChordIndex(nextIndex);
+            setActivePositions(validChords[nextIndex]);
+        }*/
+
+    /*
     useEffect(() => {
         if (selectedChord && activePositions.length > 0) {
             playChord();
         }
     }, [selectedChord, activePositions, playChord]);
+    */
 
    /*=================================================================================================================*/
 
@@ -227,6 +271,7 @@ const App: React.FC = () =>
         setIsMinorKey(isMinor);
         resetToggles();
         setActiveNotes([]); 
+        setActivePositions([]); 
     };
 
     const renderChordsForSelectedKey = () => {
