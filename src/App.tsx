@@ -115,7 +115,9 @@ const App: React.FC = () =>
             const sortedPositions = activePositions.sort((a, b) => a.string === b.string ? a.fret - b.fret : b.string - a.string);
             sortedPositions.forEach((pos, index) => {
                 const staggerTime = index * 0.05; // stagger time for strumming
-                playNote(pos.string, pos.fret, fretboard, '8n', staggerTime);
+                setTimeout(() => {
+                    playNote(pos.string, pos.fret, fretboard, '8n', staggerTime);
+                }, 100);
             });
         }
     }, [activePositions, fretboard]);
@@ -126,14 +128,17 @@ const App: React.FC = () =>
         if (!selectedKey) return;
 
         const randomToggle = Math.floor(Math.random() * 2); // Random 7th or 9th
-        setIncludeSeventh(randomToggle === 0);
-        setIncludeNinth(randomToggle === 1);
+        const newIncludeSeventh = randomToggle === 0;
+        const newIncludeNinth = randomToggle === 1;
+
+        setIncludeSeventh(newIncludeSeventh);
+        setIncludeNinth(newIncludeNinth);
         setSelectedChord({ root, type });
-        setActiveNotes([]);
-        setValidChords([]);
+
+
         setCurrentChordIndex(-1);
         updateChordNotes(root, type, includeSeventh, includeNinth);
-        const finds = Math.floor(Math.random() * 10) + 1;
+        const finds = Math.floor(Math.random() * 12) + 1;
         for (let i = 0; i < finds; i++) 
         {
             findAndHighlightChord();  
@@ -189,8 +194,6 @@ const App: React.FC = () =>
 
 /*=================================================================================================================*/
 
-
-    
     useEffect(() => {
         console.log("Updating active positions for index:", currentChordIndex);
         if (validChords.length > 0 && currentChordIndex >= 0) {
