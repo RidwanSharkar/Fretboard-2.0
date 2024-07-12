@@ -30,7 +30,8 @@ const noteColors: { [key: string]: string } = {
 const Fretboard: React.FC<FretboardProps> = ({
   notes, activeNotes, highlightAll, activePositions, clearActivePositions
 }) => {
-  const [activeNote, setActiveNote] = useState<Note | null>(null);
+
+const [activeNote, setActiveNote] = useState<Note | null>(null);
 
   useEffect(() => {
     clearActivePositions(); 

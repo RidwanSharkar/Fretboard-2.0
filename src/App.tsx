@@ -6,6 +6,8 @@ import { constructFretboard, possibleChord } from './utils/fretboardUtils';
 import { GuitarNote, ChordPosition } from './models/Note';
 import { chordFormulas } from './utils/chordUtils';
 import { playNote } from './utils/midiUtils';
+//import * as Tone from 'tone';
+
 
 /*=================================================================================================================*/
 const notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'];
@@ -62,10 +64,20 @@ const App: React.FC = () =>
         setActiveNotes([...baseIntervals, ...additionalIntervals]);
     }, [ selectedKey, isMinorKey ]);
     
-
     /*=================================================================================================================*/
-
-
+    
+    const playChord = useCallback(() => {
+        const sortedPositions = activePositions.sort((a, b) => a.string === b.string ? a.fret - b.fret : b.string - a.string);
+        sortedPositions.forEach((pos, index) => {
+            const staggerTime = index * 0.05; // stagger time for strumming
+            setTimeout(() => {
+                playNote(pos.string, pos.fret, fretboard, '8n', staggerTime);
+            }, 100);
+        });
+    }, [activePositions, fretboard]);
+    
+    /*=================================================================================================================*/
+    
     const findAndHighlightChord = useCallback(() => {
         
         if (!selectedChord) {
@@ -99,101 +111,79 @@ const App: React.FC = () =>
                 setCurrentChordIndex(0);
                 setActiveNotes([]);
                 setActivePositions(newValidChords[0]);
-                setIsPlayable(true);} 
+                setIsPlayable(true);
+            
+
+            }
             else {
                 console.log("No valid chords found.");
                 setIsPlayable(false);}
+                setActiveNotes([]);
         }
         else {
             const nextIndex = (currentChordIndex + 1) % validChords.length;           // Cycle
             setCurrentChordIndex(nextIndex);
             setActivePositions(validChords[nextIndex]);
         }
-    }, [selectedChord, fretboard, includeSeventh, includeNinth, currentChordIndex, validChords, selectedKey, isMinorKey]);
-    
-    const playChord = useCallback(() => {
-        if (activePositions.length > 0) {
-            const sortedPositions = activePositions.sort((a, b) => a.string === b.string ? a.fret - b.fret : b.string - a.string);
-            sortedPositions.forEach((pos, index) => {
-                const staggerTime = index * 0.05; // stagger time for strumming
-                setTimeout(() => {
-                    playNote(pos.string, pos.fret, fretboard, '8n', staggerTime);
-                }, 100);
-            });
-        }
-    }, [activePositions, fretboard]);
+    }, [selectedChord, fretboard, includeSeventh, includeNinth, currentChordIndex, validChords, selectedKey, isMinorKey ]);
+
+    /*=================================================================================================================*/
+
+    const handleChordSelection = useCallback((root: string, type: keyof typeof chordFormulas) => 
+    {
+        resetToggles();
+        setSelectedChord({ root, type });
+        setActiveNotes([]);
+        setValidChords([]); // Clearing "Find"
+        setCurrentChordIndex(-1); 
+        updateChordNotes(root, type, includeSeventh, includeNinth);
+    }, [updateChordNotes, includeSeventh, includeNinth]);  
 
     /*=================================================================================================================*/
 
     const playRandomChordFromKey = useCallback((root: string, type: keyof typeof chordFormulas) => {
-        
         if (!selectedKey) return;
-
-        const randomToggle = Math.floor(Math.random() * 2); // Random 7th or 9th
-        const newIncludeSeventh = randomToggle === 0;
-        const newIncludeNinth = randomToggle === 1;
-
-        setIncludeSeventh(newIncludeSeventh);
-        setIncludeNinth(newIncludeNinth);
-        setSelectedChord({ root, type });
-
-        setActiveNotes([]);
-        clearActivePositions();
-
-        updateChordNotes(root, type, includeSeventh, includeNinth);
-        findAndHighlightChord();
-        const finds = Math.floor(Math.random() * 12) + 1;
-        for (let i = 0; i < finds; i++) 
-        {
-            cycleChords('next');  
-        }
-        playChord();
-    }, [selectedKey, includeSeventh, includeNinth, updateChordNotes ]);
-        /*
-        const rootIndex = notes.indexOf(selectedChord.root);
-        let noteNames = chordFormulas[selectedChord.type].map(interval => notes[(rootIndex + interval) % 12]);
-        const fifthDegreeIndex = (notes.indexOf(selectedKey) + 7) % 12; // V degree in major 
-        const seventhDegreeIndex = (notes.indexOf(selectedKey) + 10) % 12; // VII degree in minor
-        const shouldUseFlatSeventh = (selectedChord.type === 'minor7' || selectedChord.type === 'dominant7' || selectedChord.type === 'diminished7') ||
-            (includeSeventh && (
-                (selectedChord.type === 'major' && (
-                    (!isMinorKey && notes[rootIndex] === notes[fifthDegreeIndex]) ||
-                    (isMinorKey && notes[rootIndex] === notes[seventhDegreeIndex])
-                )) ||
-                (selectedChord.type === 'minor' || selectedChord.type === 'diminished')
-            ));
     
-        if (includeSeventh) {
-            const seventhInterval = shouldUseFlatSeventh ? 10 : 11;
-            noteNames.push(notes[(rootIndex + seventhInterval) % 12]);}
-        if (includeNinth) {
-            noteNames.push(notes[(rootIndex + 14) % 12]);}
+        //setSelectedChord({ root, type });
+        setActiveNotes([]);
+        setValidChords([]);
+    
+        const rootIndex = notes.indexOf(root);
+        let noteNames = chordFormulas[type].map(interval => notes[(rootIndex + interval) % 12]);
+        if (includeSeventh) noteNames.push(notes[(rootIndex + 11) % 12]);  
+        if (includeNinth) noteNames.push(notes[(rootIndex + 14) % 12]);     
+        
+        // Add seventh and ninth
+        const newValidChords = possibleChord(fretboard, noteNames);
+        if (newValidChords.length > 0) {
+            setValidChords(newValidChords);
+            setCurrentChordIndex(0);
+            setActivePositions(newValidChords[0]);
 
-        if (validChords.length === 0 || currentChordIndex === -1) {
-            const newValidChords = possibleChord(fretboard, noteNames);
-            if (newValidChords.length > 0) {
-                setValidChords(newValidChords);
-                setCurrentChordIndex(0);
-                setActiveNotes([]);
-                setActivePositions(newValidChords[0]);
-                setIsPlayable(true);} 
-            else {
-                console.log("No valid chords found.");
-                setIsPlayable(false);}
-        } 
-        else {
-            const nextIndex = (currentChordIndex + 1) % validChords.length;           // Cycle
-            setCurrentChordIndex(nextIndex);
-            setActivePositions(validChords[nextIndex]);
-        }*/
 
-    /*
-    useEffect(() => {
-        if (selectedChord && activePositions.length > 0) {
-            playChord();
+            setActiveNotes(newValidChords[0].map(pos => ({
+                note: fretboard[pos.string][pos.fret].name,
+                interval: '' })));
+
+            /*
+            setActiveNotes(newValidChords[0].map(pos => ({
+                note: fretboard[pos.string][pos.fret].name,
+                interval: '' })));   
+            */
+
+            // Manual Play
+            const sortedPositions = newValidChords[0].sort((a, b) => a.string === b.string ? a.fret - b.fret : b.string - a.string);
+            sortedPositions.forEach((pos, index) => {
+                const staggerTime = index * 0.05; // stagger time for strumming
+                setTimeout(() => {
+                    playNote(pos.string, pos.fret, fretboard, '8n', staggerTime);
+                }, staggerTime + 100);
+            });
+        } else {
+            console.log("No valid chords found.");
+            setActivePositions([]);
         }
-    }, [selectedChord, activePositions, playChord]);
-    */
+    }, [selectedKey, fretboard, includeNinth, includeSeventh]);
 
    /*=================================================================================================================*/
 
@@ -222,8 +212,6 @@ const App: React.FC = () =>
         );
     };
 
-
-
 /*=================================================================================================================*/
 
     const cycleChords = (direction: 'next' | 'prev') => {
@@ -235,35 +223,8 @@ const App: React.FC = () =>
             setActivePositions(validChords[newIndex]);
         }
     };
-
+  
 /*=================================================================================================================*/
-
-    useEffect(() => {
-        console.log("Updating active positions for index:", currentChordIndex);
-        if (validChords.length > 0 && currentChordIndex >= 0) {
-            setActivePositions(validChords[currentChordIndex]);
-        }
-    }, [validChords, currentChordIndex]);
-
-    /*
-    useEffect(() => {
-        if (activePositions.length > 0) {
-            playChord();
-        }
-    }, [activePositions]);
-    */
-
-/*=================================================================================================================*/
-
-    const handleChordSelection = (root: string, type: keyof typeof chordFormulas) => 
-    {
-        resetToggles();
-        setSelectedChord({ root, type });
-        setActiveNotes([]);
-        setValidChords([]); // Clearing "Find"
-        setCurrentChordIndex(-1); 
-        updateChordNotes(root, type, includeSeventh, includeNinth);
-    };  
 
     const handleKeySelection = (key: string, isMinor: boolean) => {
         console.log("Selected Key: ", key, " Is Minor: ", isMinor);
@@ -279,8 +240,8 @@ const App: React.FC = () =>
         const pattern = isMinorKey ? [0, 2, 3, 5, 7, 8, 10] : [0, 2, 4, 5, 7, 9, 11];
         const types = isMinorKey ? ['minor', 'diminished', 'major', 'minor', 'minor', 'major', 'major']
                                  : ['major', 'minor', 'minor', 'major', 'major', 'minor', 'diminished'];
-        const degreeLabels = isMinorKey ? ['i', 'iiº', 'III', 'iv', 'v', 'VI', 'VII'] 
-                                        : ['I', 'ii', 'iii', 'IV', 'V', 'vi', 'viiº'];     
+        //const degreeLabels = isMinorKey ? ['i', 'iiº', 'III', 'iv', 'v', 'VI', 'VII'] 
+        //                                : ['I', 'ii', 'iii', 'IV', 'V', 'vi', 'viiº'];     
         return (
             <div className="chord-container">
                 <div className="chord-buttons">
@@ -300,15 +261,10 @@ const App: React.FC = () =>
                         );
                     })}
                 </div>
-                <div className="chord-labels">
-                    {degreeLabels.map(label => (
-                        <div className="label" key={label}>{label}</div>
-                    ))}
-                </div>
             </div>
         );
     };
-
+    // <div className="chord-labels"> {degreeLabels.map(label => (<div className="label" key={label}>{label}</div>))} </div>
     /*=================================================================================================================*/    
 
     const resetToggles = () => {
@@ -320,9 +276,24 @@ const App: React.FC = () =>
     const toggleNinth = () => {
         setIncludeNinth(prevNinth => !prevNinth);
         setIncludeSeventh(false);};
-    useEffect(() => {if (selectedChord) {updateChordNotes(selectedChord.root, selectedChord.type, includeSeventh, includeNinth);}}, 
-        [selectedChord, includeSeventh, includeNinth, updateChordNotes]);
 
+    useEffect(() => {
+        if (selectedChord) {
+            updateChordNotes(selectedChord.root, selectedChord.type, includeSeventh, includeNinth);}
+    }, [selectedChord, includeSeventh, includeNinth, updateChordNotes]);
+
+    useEffect(() => {
+        if (validChords.length > 0 && currentChordIndex >= 0) {
+            setActivePositions(validChords[currentChordIndex]);
+        }
+    }, [validChords, currentChordIndex]);
+    
+    useEffect(() => {
+        if (isPlayable) {
+            playChord();
+        }
+    }, [activePositions, isPlayable, playChord ]);
+    
 
     /*=================================================================================================================*/
 
