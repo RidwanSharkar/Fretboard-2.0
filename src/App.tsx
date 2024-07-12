@@ -139,7 +139,7 @@ const App: React.FC = () =>
     const playRandomChordFromKey = useCallback((root: string, type: keyof typeof chordFormulas) => {
         if (!selectedKey) return;
         
-        setIsPlayable(false);
+        setIsPlayable(false); // TO AVOID RUNTIME W/MANUAL
         setActiveNotes([]);
         setValidChords([]);
         clearActivePositions();
@@ -163,21 +163,25 @@ const App: React.FC = () =>
         if (includeNinth) {
             noteNames.push(notes[(rootIndex + 14) % 12]);}   
         
-        // Add seventh and ninth
         const newValidChords = possibleChord(fretboard, noteNames);
         if (newValidChords.length > 0) {
             setValidChords(newValidChords);
+
+            /*
             setCurrentChordIndex(0);
             setActivePositions(newValidChords[0]);
+            */
+
+            const randomIndex = Math.floor(Math.random() * newValidChords.length); // Generate a random index
+            setCurrentChordIndex(randomIndex); // Set to a random index
+            setActivePositions(newValidChords[randomIndex]);    
 
             setActiveNotes(newValidChords[0].map(pos => ({
                 note: fretboard[pos.string][pos.fret].name,
                 interval: '' })));
 
-            //playChord();
-            // Manual Play
-            
-            const sortedPositions = newValidChords[0].sort((a, b) => a.string === b.string ? a.fret - b.fret : b.string - a.string);
+            // playChord(); Manual Play newValidChords[0]
+            const sortedPositions = newValidChords[randomIndex].sort((a, b) => a.string === b.string ? a.fret - b.fret : b.string - a.string);
             sortedPositions.forEach((pos, index) => {
                 const staggerTime = index * 0.05; // stagger time for strumming
                 setTimeout(() => {
