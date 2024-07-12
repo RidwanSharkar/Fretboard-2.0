@@ -70,9 +70,7 @@ const App: React.FC = () =>
         const sortedPositions = activePositions.sort((a, b) => a.string === b.string ? a.fret - b.fret : b.string - a.string);
         sortedPositions.forEach((pos, index) => {
             const staggerTime = index * 0.05; // stagger time for strumming
-            setTimeout(() => {
-                playNote(pos.string, pos.fret, fretboard, '8n', staggerTime);
-            }, 100);
+            playNote(pos.string, pos.fret, fretboard, '8n', staggerTime);
         });
     }, [activePositions, fretboard]);
     
@@ -140,15 +138,14 @@ const App: React.FC = () =>
 
     const playRandomChordFromKey = useCallback((root: string, type: keyof typeof chordFormulas) => {
         if (!selectedKey) return;
-    
-        //setSelectedChord({ root, type });
+        
+        setIsPlayable(false);
         setActiveNotes([]);
         setValidChords([]);
         clearActivePositions();
-    
         const rootIndex = notes.indexOf(root);
         let noteNames = chordFormulas[type].map(interval => notes[(rootIndex + interval) % 12]);
-
+        /* Merge function x3*/
         const fifthDegreeIndex = (notes.indexOf(selectedKey) + 7) % 12; // V degree in major 
         const seventhDegreeIndex = (notes.indexOf(selectedKey) + 10) % 12; // VII degree in minor
         const shouldUseFlatSeventh = (type === 'minor7' || type === 'dominant7' || type === 'diminished7') ||
@@ -173,13 +170,13 @@ const App: React.FC = () =>
             setCurrentChordIndex(0);
             setActivePositions(newValidChords[0]);
 
-
             setActiveNotes(newValidChords[0].map(pos => ({
                 note: fretboard[pos.string][pos.fret].name,
                 interval: '' })));
 
-
+            //playChord();
             // Manual Play
+            
             const sortedPositions = newValidChords[0].sort((a, b) => a.string === b.string ? a.fret - b.fret : b.string - a.string);
             sortedPositions.forEach((pos, index) => {
                 const staggerTime = index * 0.05; // stagger time for strumming
@@ -187,11 +184,12 @@ const App: React.FC = () =>
                     playNote(pos.string, pos.fret, fretboard, '8n', staggerTime);
                 }, staggerTime + 100);
             });
+            
         } else {
             console.log("No valid chords found.");
             clearActivePositions();
         }
-    }, [selectedKey, fretboard, includeNinth, includeSeventh]);
+    }, [selectedKey, fretboard, includeNinth, includeSeventh, isMinorKey]);
 
    /*=================================================================================================================*/
 
