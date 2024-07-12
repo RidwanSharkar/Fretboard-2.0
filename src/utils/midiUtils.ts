@@ -5,7 +5,7 @@ import { GuitarNote } from '../models/Note';
 
 export const playNote = (string: number, fret: number, fretboard: GuitarNote[][], duration: string = '2n', staggerTime: number = 0) => {
     const fullNote = getNoteFromPosition(string, fret, fretboard);
-    const startTime = Tone.now() + staggerTime; // stagger
+    const startTime = Tone.now() + staggerTime;
     synth.triggerAttackRelease(fullNote, duration, startTime);
 };
 

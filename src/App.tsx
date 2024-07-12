@@ -8,12 +8,11 @@ import { chordFormulas } from './utils/chordUtils';
 import { playNote } from './utils/midiUtils';
 //import * as Tone from 'tone';
 
-
-/*=================================================================================================================*/
+/*=====================================================================================================================*/
 const notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'];
 const keys = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'C#', 'G#', 'D#', 'A#', 'F'];
 /*const intervals = ['R', 'm2', 'M2', 'm3', 'M3', 'P4', 'T', 'P5', 'm6', 'M6', 'm7', 'M7'];*/
-/*=================================================================================================================*/
+/*=====================================================================================================================*/
 
 const App: React.FC = () => 
 {
@@ -32,20 +31,15 @@ const App: React.FC = () =>
     const clearActivePositions = () => {setActivePositions([]);};
     const [isPlayable, setIsPlayable] = useState(false); // MIDI
 
-    /*=================================================================================================================*/
+/*=====================================================================================================================*/
+/*=====================================================================================================================*/
 
-    const updateChordNotes = useCallback((root: string, type: keyof typeof chordFormulas, includeSeventh: boolean, includeNinth: boolean) => {
+    const shouldUseFlatSeventh = (root: string, type: keyof typeof chordFormulas, includeSeventh: boolean, selectedKey: string, isMinorKey: boolean) => {
         const rootIndex = notes.indexOf(root);
-        // Dominant 7th condition
         const fifthDegreeIndex = (notes.indexOf(selectedKey) + 7) % 12; // V degree in major 
         const seventhDegreeIndex = (notes.indexOf(selectedKey) + 10) % 12; // VII degree in minor
-        const baseIntervals = chordFormulas[type].map((interval, index) => ({
-            note: notes[(rootIndex + interval) % 12],
-            interval: ['R', '3rd', '5th'][index % 3]
-        }));
-        let additionalIntervals = [];
     
-        const shouldUseFlatSeventh = (type === 'minor7' || type === 'dominant7' || type === 'diminished7') ||
+        return (type === 'minor7' || type === 'dominant7' || type === 'diminished7') ||
             (includeSeventh && (
                 (type === 'major' && (
                     (!isMinorKey && notes[rootIndex] === notes[fifthDegreeIndex]) ||
@@ -53,13 +47,31 @@ const App: React.FC = () =>
                 )) ||
                 (type === 'minor' || type === 'diminished')
             ));
+    };
+
+    /*=================================================================================================================*/
+
+    const updateChordNotes = useCallback((root: string, type: keyof typeof chordFormulas, includeSeventh: boolean, includeNinth: boolean) => {
+        const rootIndex = notes.indexOf(root);
+        
+        const baseIntervals = chordFormulas[type].map((interval, index) => ({
+            note: notes[(rootIndex + interval) % 12],
+            interval: ['R', '3rd', '5th'][index % 3]
+        }));
+        let additionalIntervals = [];
+    
         if (includeSeventh) {
+            const flatSeventh = shouldUseFlatSeventh(root, type, includeSeventh, selectedKey, isMinorKey) ? 10 : 11;
             additionalIntervals.push({
-                note: notes[(rootIndex + (shouldUseFlatSeventh ? 10 : 11)) % 12],
-                interval: '7th'});
+                note: notes[(rootIndex + flatSeventh) % 12],
+                interval: '7th'
+            });
         }
         if (includeNinth) {
-            additionalIntervals.push({ note: notes[(rootIndex + 14) % 12], interval: '9th' });
+            additionalIntervals.push({
+                note: notes[(rootIndex + 14) % 12],
+                interval: '9th'
+            });
         }
         setActiveNotes([...baseIntervals, ...additionalIntervals]);
     }, [ selectedKey, isMinorKey ]);
@@ -81,23 +93,12 @@ const App: React.FC = () =>
             console.log("No chord selected.");
             return;
         }
-        /* merge function from updateChordNotes */
         const rootIndex = notes.indexOf(selectedChord.root);
         let noteNames = chordFormulas[selectedChord.type].map(interval => notes[(rootIndex + interval) % 12]);
-        const fifthDegreeIndex = (notes.indexOf(selectedKey) + 7) % 12; // V degree in major 
-        const seventhDegreeIndex = (notes.indexOf(selectedKey) + 10) % 12; // VII degree in minor
-        const shouldUseFlatSeventh = (selectedChord.type === 'minor7' || selectedChord.type === 'dominant7' || selectedChord.type === 'diminished7') ||
-            (includeSeventh && (
-                (selectedChord.type === 'major' && (
-                    (!isMinorKey && notes[rootIndex] === notes[fifthDegreeIndex]) ||
-                    (isMinorKey && notes[rootIndex] === notes[seventhDegreeIndex])
-                )) ||
-                (selectedChord.type === 'minor' || selectedChord.type === 'diminished')
-            ));
-    
+        
         if (includeSeventh) {
-            const seventhInterval = shouldUseFlatSeventh ? 10 : 11;
-            noteNames.push(notes[(rootIndex + seventhInterval) % 12]);}
+            const flatSeventh = shouldUseFlatSeventh(selectedChord.root, selectedChord.type, includeSeventh, selectedKey, isMinorKey) ? 10 : 11;
+            noteNames.push(notes[(rootIndex + flatSeventh) % 12]);}
         if (includeNinth) {
             noteNames.push(notes[(rootIndex + 14) % 12]);}
 
@@ -145,21 +146,10 @@ const App: React.FC = () =>
         clearActivePositions();
         const rootIndex = notes.indexOf(root);
         let noteNames = chordFormulas[type].map(interval => notes[(rootIndex + interval) % 12]);
-        /* Merge function x3*/
-        const fifthDegreeIndex = (notes.indexOf(selectedKey) + 7) % 12; // V degree in major 
-        const seventhDegreeIndex = (notes.indexOf(selectedKey) + 10) % 12; // VII degree in minor
-        const shouldUseFlatSeventh = (type === 'minor7' || type === 'dominant7' || type === 'diminished7') ||
-            (includeSeventh && (
-                (type === 'major' && (
-                    (!isMinorKey && notes[rootIndex] === notes[fifthDegreeIndex]) ||
-                    (isMinorKey && notes[rootIndex] === notes[seventhDegreeIndex])
-                )) ||
-                (type === 'minor' || type === 'diminished')
-            ));
-    
+        
         if (includeSeventh) {
-            const seventhInterval = shouldUseFlatSeventh ? 10 : 11;
-            noteNames.push(notes[(rootIndex + seventhInterval) % 12]);}
+            const flatSeventh = shouldUseFlatSeventh(root, type, includeSeventh, selectedKey, isMinorKey) ? 10 : 11;
+            noteNames.push(notes[(rootIndex + flatSeventh) % 12]);}
         if (includeNinth) {
             noteNames.push(notes[(rootIndex + 14) % 12]);}   
         
@@ -167,15 +157,14 @@ const App: React.FC = () =>
         if (newValidChords.length > 0) {
             setValidChords(newValidChords);
 
-            /*
+            /* NOT RANDOMIZED
             setCurrentChordIndex(0);
             setActivePositions(newValidChords[0]);
             */
-
-            const randomIndex = Math.floor(Math.random() * newValidChords.length); // Generate a random index
-            setCurrentChordIndex(randomIndex); // Set to a random index
-            setActivePositions(newValidChords[randomIndex]);    
-
+            const randomIndex = Math.floor(Math.random() * newValidChords.length); 
+            setCurrentChordIndex(randomIndex); 
+            setActivePositions(newValidChords[randomIndex]);
+                
             setActiveNotes(newValidChords[0].map(pos => ({
                 note: fretboard[pos.string][pos.fret].name,
                 interval: '' })));
