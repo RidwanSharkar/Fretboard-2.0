@@ -79,7 +79,6 @@ const App: React.FC = () =>
     /*=================================================================================================================*/
     
     const findAndHighlightChord = useCallback(() => {
-        
         if (!selectedChord) {
             console.log("No chord selected.");
             return;
@@ -112,8 +111,6 @@ const App: React.FC = () =>
                 setActiveNotes([]);
                 setActivePositions(newValidChords[0]);
                 setIsPlayable(true);
-            
-
             }
             else {
                 console.log("No valid chords found.");
@@ -121,7 +118,7 @@ const App: React.FC = () =>
                 setActiveNotes([]);
         }
         else {
-            const nextIndex = (currentChordIndex + 1) % validChords.length;           // Cycle
+            const nextIndex = (currentChordIndex + 1) % validChords.length;  // Cycle if repeat click
             setCurrentChordIndex(nextIndex);
             setActivePositions(validChords[nextIndex]);
         }
@@ -147,6 +144,7 @@ const App: React.FC = () =>
         //setSelectedChord({ root, type });
         setActiveNotes([]);
         setValidChords([]);
+        clearActivePositions();
     
         const rootIndex = notes.indexOf(root);
         let noteNames = chordFormulas[type].map(interval => notes[(rootIndex + interval) % 12]);
@@ -165,11 +163,6 @@ const App: React.FC = () =>
                 note: fretboard[pos.string][pos.fret].name,
                 interval: '' })));
 
-            /*
-            setActiveNotes(newValidChords[0].map(pos => ({
-                note: fretboard[pos.string][pos.fret].name,
-                interval: '' })));   
-            */
 
             // Manual Play
             const sortedPositions = newValidChords[0].sort((a, b) => a.string === b.string ? a.fret - b.fret : b.string - a.string);
@@ -181,7 +174,7 @@ const App: React.FC = () =>
             });
         } else {
             console.log("No valid chords found.");
-            setActivePositions([]);
+            clearActivePositions();
         }
     }, [selectedKey, fretboard, includeNinth, includeSeventh]);
 

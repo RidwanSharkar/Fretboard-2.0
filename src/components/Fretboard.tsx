@@ -28,10 +28,8 @@ const noteColors: { [key: string]: string } = {
 };
 
 const Fretboard: React.FC<FretboardProps> = ({
-  notes, activeNotes, highlightAll, activePositions, clearActivePositions
-}) => {
-
-const [activeNote, setActiveNote] = useState<Note | null>(null);
+  notes, activeNotes, highlightAll, activePositions, clearActivePositions }) => {
+    const [activeNote, setActiveNote] = useState<Note | null>(null);
 
   useEffect(() => {
     clearActivePositions(); 
@@ -44,9 +42,13 @@ const [activeNote, setActiveNote] = useState<Note | null>(null);
   };
 
   const isActive = (string: number, fret: number) => {
-    return highlightAll ||
-           activeNotes.some(an => an.note === notes[string][fret].name) ||
-           activePositions.some(pos => pos.string === string && pos.fret === fret);
+    if (highlightAll) {
+      return true;
+    }
+    if (activePositions.length > 0) {
+      return activePositions.some(pos => pos.string === string && pos.fret === fret);
+    }
+    return activeNotes.some(an => an.note === notes[string][fret].name);
   };
 
   return (

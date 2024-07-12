@@ -1,5 +1,5 @@
 // utils/fretboardUtils.ts
-import { GuitarNote, ChordNode, ChordPosition } from '../models/Note';
+import { GuitarNote, ChordPosition } from '../models/Note';
 
 
 export const constructFretboard = (strings: number, frets: number): GuitarNote[][] => {
