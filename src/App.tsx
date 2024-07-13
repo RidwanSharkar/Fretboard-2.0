@@ -6,7 +6,7 @@ import { constructFretboard, possibleChord } from './utils/fretboardUtils';
 import { GuitarNote, ChordPosition } from './models/Note';
 import { chordFormulas } from './utils/chordUtils';
 import { playNote } from './utils/midiUtils';
-import { generateChordProgression } from './utils/progressionUtils';
+import { generateChordProgressions } from './utils/progressionUtils';
 
 /*=====================================================================================================================*/
 const notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'];
@@ -178,9 +178,9 @@ const App: React.FC = () =>
 
     const handleGenerateProgression = useCallback(() => {
         if (!selectedKey) return;
-        //setActiveNotes([]);
-        //setActivePositions([]);
-        const progression = generateChordProgression(isMinorKey, selectedKey);
+        setActiveNotes([]);
+        setActivePositions([]);
+        const progression = generateChordProgressions(isMinorKey, selectedKey);
         setGeneratedProgression(progression);
     }, [selectedKey, isMinorKey]);
 
@@ -318,6 +318,19 @@ const App: React.FC = () =>
 
     /*=================================================================================================================*/
 
+    const getChordTypeDisplay = (type: keyof typeof chordFormulas) => {
+        switch (type) {
+            case 'minor':
+                return 'm';
+            case 'major':
+                return 'M';
+            case 'diminished':
+                return '°';
+            default:
+                return type;
+        }
+    };
+
     const radiusMajor = 175;
     const radiusMinor = 120;
     return (
@@ -390,7 +403,7 @@ const App: React.FC = () =>
                 
                 {generatedProgression.length > 0 && (
                     <div className="generated-progression">
-                        Progression: {generatedProgression.map(chord => `${chord.root} ${chord.type}`).join(' - ')}
+                        {generatedProgression.map(chord => `${chord.root}${getChordTypeDisplay(chord.type)}`).join(' - ')}
                     </div>
                 )}
     
