@@ -83,3 +83,4 @@ function isValidChordPosition(frets: number[], currentString: number, currentFre
 
   return true;
 }
+

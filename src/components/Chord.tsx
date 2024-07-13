@@ -29,3 +29,4 @@ const Chord: React.FC<ChordProps> = ({ chord, fretboard }) => {
 };
 
 export default Chord;
+

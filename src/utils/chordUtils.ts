@@ -32,3 +32,4 @@ export const generateChordPositions = (chord: Chord, fretboard: GuitarNote[][]):
   const notePositions: GuitarNote[] = [];
   return notePositions;
 };
+

@@ -6,7 +6,7 @@ import { constructFretboard, possibleChord } from './utils/fretboardUtils';
 import { GuitarNote, ChordPosition } from './models/Note';
 import { chordFormulas } from './utils/chordUtils';
 import { playNote } from './utils/midiUtils';
-//import * as Tone from 'tone';
+import { generateChordProgression } from './utils/progressionUtils';
 
 /*=====================================================================================================================*/
 const notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'];
@@ -31,7 +31,9 @@ const App: React.FC = () =>
     const clearActivePositions = () => {setActivePositions([]);};
     const [isPlayable, setIsPlayable] = useState(false); // MIDI
 
-/*=====================================================================================================================*/
+    const [generatedProgression, setGeneratedProgression] = useState<{ root: string; type: keyof typeof chordFormulas }[]>([]);
+    const [isProgressionPlaying, setIsProgressionPlaying] = useState(false);
+
 /*=====================================================================================================================*/
 
     const shouldUseFlatSeventh = (root: string, type: keyof typeof chordFormulas, includeSeventh: boolean, selectedKey: string, isMinorKey: boolean) => {
@@ -128,6 +130,7 @@ const App: React.FC = () =>
     const handleChordSelection = useCallback((root: string, type: keyof typeof chordFormulas) => 
     {
         resetToggles();
+        setIsProgressionPlaying(false);
         setSelectedChord({ root, type });
         setActiveNotes([]);
         setValidChords([]); // Clearing "Find"
@@ -138,51 +141,64 @@ const App: React.FC = () =>
     /*=================================================================================================================*/
 
     const playRandomChordFromKey = useCallback((root: string, type: keyof typeof chordFormulas) => {
-        if (!selectedKey) return;
-        
-        setIsPlayable(false); // TO AVOID RUNTIME W/MANUAL
-        setActiveNotes([]);
-        setValidChords([]);
-        clearActivePositions();
+        setSelectedChord({ root, type });
+        //setActiveNotes([]);
+        //setValidChords([]);
+        //setCurrentChordIndex(-1); 
+        updateChordNotes(root, type, includeSeventh, includeNinth);
+
         const rootIndex = notes.indexOf(root);
         let noteNames = chordFormulas[type].map(interval => notes[(rootIndex + interval) % 12]);
-        
         if (includeSeventh) {
             const flatSeventh = shouldUseFlatSeventh(root, type, includeSeventh, selectedKey, isMinorKey) ? 10 : 11;
             noteNames.push(notes[(rootIndex + flatSeventh) % 12]);}
         if (includeNinth) {
-            noteNames.push(notes[(rootIndex + 14) % 12]);}   
-        
+            noteNames.push(notes[(rootIndex + 14) % 12]);}
+
         const newValidChords = possibleChord(fretboard, noteNames);
         if (newValidChords.length > 0) {
             setValidChords(newValidChords);
-
-            /* NOT RANDOMIZED
-            setCurrentChordIndex(0);
-            setActivePositions(newValidChords[0]);
-            */
             const randomIndex = Math.floor(Math.random() * newValidChords.length); 
-            setCurrentChordIndex(randomIndex); 
+            setCurrentChordIndex(randomIndex);
+            setActiveNotes([]);
             setActivePositions(newValidChords[randomIndex]);
-                
-            setActiveNotes(newValidChords[0].map(pos => ({
+    
+            setActiveNotes(newValidChords[randomIndex].map(pos => ({
                 note: fretboard[pos.string][pos.fret].name,
                 interval: '' })));
-
-            // playChord(); Manual Play newValidChords[0]
-            const sortedPositions = newValidChords[randomIndex].sort((a, b) => a.string === b.string ? a.fret - b.fret : b.string - a.string);
-            sortedPositions.forEach((pos, index) => {
-                const staggerTime = index * 0.05; // stagger time for strumming
-                setTimeout(() => {
-                    playNote(pos.string, pos.fret, fretboard, '8n', staggerTime);
-                }, staggerTime + 100);
-            });
-            
-        } else {
-            console.log("No valid chords found.");
-            clearActivePositions();
+            setIsPlayable(true);
         }
-    }, [selectedKey, fretboard, includeNinth, includeSeventh, isMinorKey]);
+        else {
+            console.log("No valid chords found.");
+            setIsPlayable(false);}
+            setActiveNotes([]);
+    }, [ fretboard, includeSeventh, includeNinth, selectedKey, isMinorKey, updateChordNotes ]);
+
+    /*=====================================================================================================================*/
+
+    const handleGenerateProgression = useCallback(() => {
+        if (!selectedKey) return;
+        //setActiveNotes([]);
+        //setActivePositions([]);
+        const progression = generateChordProgression(isMinorKey, selectedKey);
+        setGeneratedProgression(progression);
+    }, [selectedKey, isMinorKey]);
+
+    /*=====================================================================================================================*/
+
+    const playGeneratedProgression = useCallback(() => {
+        if (generatedProgression.length === 0) return;
+        setIsProgressionPlaying(true);
+        
+        generatedProgression.forEach((chord, index) => {
+            setTimeout(() => {
+                playRandomChordFromKey(chord.root, chord.type);
+                if (index === generatedProgression.length - 1) {
+                  setIsProgressionPlaying(false); // End of progression
+                }
+              }, index * 1000);
+            });
+    }, [generatedProgression, playRandomChordFromKey]);
 
    /*=================================================================================================================*/
 
@@ -280,12 +296,18 @@ const App: React.FC = () =>
         if (selectedChord) {
             updateChordNotes(selectedChord.root, selectedChord.type, includeSeventh, includeNinth);}
     }, [selectedChord, includeSeventh, includeNinth, updateChordNotes]);
-
+    
     useEffect(() => {
-        if (validChords.length > 0 && currentChordIndex >= 0) {
+        if (validChords.length > 0) {
             setActivePositions(validChords[currentChordIndex]);
+            const activePositionsNotes = validChords[currentChordIndex].map(pos => {
+                const note = fretboard[pos.string][pos.fret].name;
+                return { note: note, interval: '' };
+            });
+    
+            setActiveNotes(activePositionsNotes);
         }
-    }, [validChords, currentChordIndex]);
+    }, [validChords, currentChordIndex, fretboard]);
     
     useEffect(() => {
         if (isPlayable) {
@@ -343,7 +365,7 @@ const App: React.FC = () =>
 
                 {/* Fretboard and toggles container */}
                 <div className="fretboard-container">
-                    <Fretboard notes={fretboard} activeNotes={activeNotes} highlightAll={highlightAll} activePositions={activePositions} clearActivePositions={clearActivePositions}/>
+                    <Fretboard notes={fretboard} activeNotes={activeNotes} highlightAll={highlightAll} activePositions={activePositions} clearActivePositions={clearActivePositions} isProgressionPlaying={isProgressionPlaying}  />
                     <div className="toggle-buttons">
                         <button onClick={toggleSeventh} className={`toggle-button ${includeSeventh ? 'active' : ''}`}>7th</button>
                         <button onClick={toggleNinth} className={`toggle-button ${includeNinth ? 'active' : ''}`}>9th</button>
@@ -352,16 +374,27 @@ const App: React.FC = () =>
                         <button onClick={() => cycleChords('prev')} disabled={validChords.length <= 1} className="toggle-button">Prev</button>
                         <button onClick={() => cycleChords('next')} disabled={validChords.length <= 1} className="toggle-button">Next</button> 
                         <button onClick={playChord} disabled={!isPlayable} className="toggle-button">Play</button>
+                        <button onClick={handleGenerateProgression} className="toggle-button">Gen</button>
+                        <button onClick={playGeneratedProgression} className="toggle-button">PG</button>
                     </div>
                         
                 </div>
 
 
                 <div className="fret-labels">
-                        {Array.from({ length: 16 }).map((_, index) => (  
-                            <div className="fret-label" key={index}>{index}</div>
-                        ))}
+                    {Array.from({ length: 16 }).map((_, index) => (  
+                        <div className="fret-label" key={index}>{index}</div>
+                    ))}
+                </div>
+
+                
+                {generatedProgression.length > 0 && (
+                    <div className="generated-progression">
+                        Progression: {generatedProgression.map(chord => `${chord.root} ${chord.type}`).join(' - ')}
                     </div>
+                )}
+    
+
         
             </header>
         </div>

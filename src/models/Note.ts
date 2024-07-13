@@ -19,3 +19,4 @@ export interface ChordPosition {
   string: number;
   fret: number;
 }
+

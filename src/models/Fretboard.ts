@@ -6,3 +6,4 @@ export interface Fretboard {
   frets: number;
   notes: GuitarNote[][];
 }
+

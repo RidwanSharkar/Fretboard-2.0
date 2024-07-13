@@ -1,6 +1,6 @@
 // components/Fretboard.tsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import './Fretboard.css';
 import { GuitarNote as Note, ChordPosition  } from '../models/Note';
 
@@ -10,6 +10,7 @@ interface FretboardProps {
   highlightAll: boolean;
   activePositions: ChordPosition[];
   clearActivePositions: () => void;
+  isProgressionPlaying: boolean;
 }
 
 const noteColors: { [key: string]: string } = {
@@ -28,18 +29,8 @@ const noteColors: { [key: string]: string } = {
 };
 
 const Fretboard: React.FC<FretboardProps> = ({
-  notes, activeNotes, highlightAll, activePositions, clearActivePositions }) => {
-    const [activeNote, setActiveNote] = useState<Note | null>(null);
+  notes, activeNotes, highlightAll, activePositions, clearActivePositions, isProgressionPlaying }) => {
 
-  useEffect(() => {
-    clearActivePositions(); 
-  }, [activeNotes, clearActivePositions]);
-
-  const handleFretClick = (note: Note) => {
-    setActiveNote(prevNote =>
-      prevNote && prevNote.string === note.string && prevNote.fret === note.fret ? null : note
-    );
-  };
 
   const isActive = (string: number, fret: number) => {
     if (highlightAll) {
@@ -62,7 +53,7 @@ const Fretboard: React.FC<FretboardProps> = ({
               <div
                 key={fretIndex}
                 className={`fret ${active ? 'active' : ''} ${fretIndex === 0 ? 'open-note' : ''}`}
-                onClick={() => handleFretClick(note)}
+
                 style={{ backgroundColor: active ? noteColors[note.name] : '#f5f5f5' }}
               >
                 <span className="note">{note.name}</span>
