@@ -24,30 +24,33 @@ const chordProgressionRules: Record<ScaleType, Partial<Record<RomanNumeral, Roma
     },
 
     minor: {
-        'i': ['ii°', 'III', 'iv', 'V', 'VI', 'VII'],
-        'ii°': ['V', 'VII'],
+        'i': ['ii°', 'III', 'iv', 'v', 'VI', 'VII'],
+        'ii°': ['v', 'VII'],
         'III': ['iv', 'ii°', 'VI'],
         'iv': ['ii°', 'V', 'VII'], // 'V' for harmonic minor only
-        'V': ['VI', 'i', 'vii°'], // 'v' melodic minor  remove 'vii°'
+        'v': ['VI', 'i', 'vii°'], // 'v' melodic minor  remove 'vii°'
+        'V': ['i', 'vii°'],
         'VI': ['iv', 'ii°'],
-        'VII': ['III', 'iv', 'ii°'] 
+        'vii°': ['i', 'VI'],
+        'VII': ['III', 'iv', 'ii°']
     }
 };
+
 
 export function generateChordProgressions(isMinorKey: boolean, selectedKey: string): { root: string; type: keyof typeof chordFormulas }[]
 {
     let progression = [];
     do {
         progression = generateChordProgression(isMinorKey, selectedKey);
-    } while (progression.length < 4 || progression.length > 10); // filter range
+    } while (progression.length < 4 || progression.length > 9); // filter range
     return progression;
 }
 
 export function generateChordProgression(isMinorKey: boolean, selectedKey: string): ChordProgression[] {
     const scaleType: ScaleType = isMinorKey ? 'minor' : 'major';
     const rules = chordProgressionRules[scaleType];
-    const startingOptions: RomanNumeral[] = isMinorKey ? ['VI', 'VII', 'i'] : ['vi', 'iii'];
-    const endingOptions: RomanNumeral[] = isMinorKey ? ['i', 'v'] : ['I', 'V'];
+    const startingOptions: RomanNumeral[] = isMinorKey ? ['VI', 'i'] : ['vi', 'iii']; // 'VII'
+    const endingOptions: RomanNumeral[] = isMinorKey ? ['i'] : ['I', 'V']; //'v'
 
     let currentChord: RomanNumeral = startingOptions[Math.floor(Math.random() * startingOptions.length)];
 
