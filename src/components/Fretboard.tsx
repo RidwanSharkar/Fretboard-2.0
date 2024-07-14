@@ -1,6 +1,5 @@
 // components/Fretboard.tsx
 
-import React, { useEffect } from 'react';
 import './Fretboard.css';
 import { GuitarNote as Note, ChordPosition  } from '../models/Note';
 
@@ -54,7 +53,7 @@ const Fretboard: React.FC<FretboardProps> = ({
                 key={fretIndex}
                 className={`fret ${active ? 'active' : ''} ${fretIndex === 0 ? 'open-note' : ''}`}
 
-                style={{ backgroundColor: active ? noteColors[note.name] : '#f5f5f5' }}
+                style={{ backgroundColor: active ? noteColors[note.name] : '#eacaca' }} // FRET BACKGROUND
               >
                 <span className="note">{note.name}</span>
                 {active && (

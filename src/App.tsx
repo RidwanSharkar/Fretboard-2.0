@@ -6,7 +6,7 @@ import { constructFretboard, possibleChord } from './utils/fretboardUtils';
 import { GuitarNote, ChordPosition } from './models/Note';
 import { chordFormulas } from './utils/chordUtils';
 import { playNote } from './utils/midiUtils';
-import { generateChordProgressions } from './utils/progressionUtils';
+import { generateChordProgressions, ChordProgression } from './utils/progressionUtils';
 
 /*=====================================================================================================================*/
 const notes = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'];
@@ -31,8 +31,12 @@ const App: React.FC = () =>
     const clearActivePositions = () => {setActivePositions([]);};
     const [isPlayable, setIsPlayable] = useState(false); // MIDI
 
-    const [generatedProgression, setGeneratedProgression] = useState<{ root: string; type: keyof typeof chordFormulas }[]>([]);
     const [isProgressionPlaying, setIsProgressionPlaying] = useState(false);
+
+    const [generatedProgression, setGeneratedProgression] = useState<ChordProgression[]>([]);
+    const [playedProgression, setPlayedProgression] = useState<ChordPosition[][]>([]);
+    const [savedProgression, setSavedProgression] = useState<ChordPosition[][]>([]);
+    const [showSavedProgression, setShowSavedProgression] = useState(false);
 
 /*=====================================================================================================================*/
 
@@ -40,41 +44,29 @@ const App: React.FC = () =>
         const rootIndex = notes.indexOf(root);
         const fifthDegreeIndex = (notes.indexOf(selectedKey) + 7) % 12; // V degree in major 
         const seventhDegreeIndex = (notes.indexOf(selectedKey) + 10) % 12; // VII degree in minor
-    
         return (type === 'minor7' || type === 'dominant7' || type === 'diminished7') ||
             (includeSeventh && (
-                (type === 'major' && (
-                    (!isMinorKey && notes[rootIndex] === notes[fifthDegreeIndex]) ||
-                    (isMinorKey && notes[rootIndex] === notes[seventhDegreeIndex])
-                )) ||
-                (type === 'minor' || type === 'diminished')
-            ));
+                (type === 'major' && ((!isMinorKey && notes[rootIndex] === notes[fifthDegreeIndex]) ||
+                    (isMinorKey && notes[rootIndex] === notes[seventhDegreeIndex]))) || (type === 'minor' || type === 'diminished')));
     };
 
     /*=================================================================================================================*/
 
     const updateChordNotes = useCallback((root: string, type: keyof typeof chordFormulas, includeSeventh: boolean, includeNinth: boolean) => {
         const rootIndex = notes.indexOf(root);
-        
         const baseIntervals = chordFormulas[type].map((interval, index) => ({
             note: notes[(rootIndex + interval) % 12],
-            interval: ['R', '3rd', '5th'][index % 3]
-        }));
+            interval: ['R', '3rd', '5th'][index % 3]}));
         let additionalIntervals = [];
-    
         if (includeSeventh) {
             const flatSeventh = shouldUseFlatSeventh(root, type, includeSeventh, selectedKey, isMinorKey) ? 10 : 11;
             additionalIntervals.push({
                 note: notes[(rootIndex + flatSeventh) % 12],
-                interval: '7th'
-            });
-        }
+                interval: '7th'});}
         if (includeNinth) {
             additionalIntervals.push({
                 note: notes[(rootIndex + 14) % 12],
-                interval: '9th'
-            });
-        }
+                interval: '9th'});}
         setActiveNotes([...baseIntervals, ...additionalIntervals]);
     }, [ selectedKey, isMinorKey ]);
     
@@ -84,8 +76,7 @@ const App: React.FC = () =>
         const sortedPositions = activePositions.sort((a, b) => a.string === b.string ? a.fret - b.fret : b.string - a.string);
         sortedPositions.forEach((pos, index) => {
             const staggerTime = index * 0.05; // stagger time for strumming
-            playNote(pos.string, pos.fret, fretboard, '8n', staggerTime);
-        });
+            playNote(pos.string, pos.fret, fretboard, '8n', staggerTime);});
     }, [activePositions, fretboard]);
     
     /*=================================================================================================================*/
@@ -125,26 +116,10 @@ const App: React.FC = () =>
         }
     }, [selectedChord, fretboard, includeSeventh, includeNinth, currentChordIndex, validChords, selectedKey, isMinorKey ]);
 
-    /*=================================================================================================================*/
-
-    const handleChordSelection = useCallback((root: string, type: keyof typeof chordFormulas) => 
-    {
-        resetToggles();
-        setIsProgressionPlaying(false);
-        setSelectedChord({ root, type });
-        setActiveNotes([]);
-        setValidChords([]); // Clearing "Find"
-        setCurrentChordIndex(-1); 
-        updateChordNotes(root, type, includeSeventh, includeNinth);
-    }, [updateChordNotes, includeSeventh, includeNinth]);  
-
-    /*=================================================================================================================*/
+/*=====================================================================================================================*/
 
     const playRandomChordFromKey = useCallback((root: string, type: keyof typeof chordFormulas) => {
         setSelectedChord({ root, type });
-        //setActiveNotes([]);
-        //setValidChords([]);
-        //setCurrentChordIndex(-1); 
         updateChordNotes(root, type, includeSeventh, includeNinth);
 
         const rootIndex = notes.indexOf(root);
@@ -166,6 +141,8 @@ const App: React.FC = () =>
             setActiveNotes(newValidChords[randomIndex].map(pos => ({
                 note: fretboard[pos.string][pos.fret].name,
                 interval: '' })));
+
+            setPlayedProgression(prev => [...prev, newValidChords[randomIndex]]);
             setIsPlayable(true);
         }
         else {
@@ -174,18 +151,46 @@ const App: React.FC = () =>
             setActiveNotes([]);
     }, [ fretboard, includeSeventh, includeNinth, selectedKey, isMinorKey, updateChordNotes ]);
 
-    /*=====================================================================================================================*/
+    
+/*=====================================================================================================================*/
+/*=================================================CHORD PROGRESSION===================================================*/
+/*=====================================================================================================================*/
 
+    const convertProgressionToPositions = useCallback((progression: ChordProgression[]): ChordPosition[][] => {
+        return progression.map(chord => findChordPositions(chord.root, chord.type, fretboard));
+    }, [ fretboard ]);
+
+    const findChordPositions = (root: string, type: keyof typeof chordFormulas, fretboard: GuitarNote[][]): ChordPosition[] => {
+        const rootIndex = notes.indexOf(root);
+        const noteNames = chordFormulas[type].map(interval => notes[(rootIndex + interval) % 12]);
+        const positions = possibleChord(fretboard, noteNames);
+        // Assuming possibleChord returns ChordPosition[][]
+        // Flatten the array if multiple position sets are not needed
+        return positions.flat(); // Adjust based on your specific requirement
+    };
+
+    /*=================================================================================================================*/
     const handleGenerateProgression = useCallback(() => {
         if (!selectedKey) return;
+        setSelectedChord(null);
         setActiveNotes([]);
         setActivePositions([]);
         const progression = generateChordProgressions(isMinorKey, selectedKey);
-        setGeneratedProgression(progression);
+        setGeneratedProgression(progression as ChordProgression[]);
     }, [selectedKey, isMinorKey]);
 
-    /*=====================================================================================================================*/
+    /*=================================================================================================================*/
+    const handleSaveProgression = useCallback(() => {
+        const positions = convertProgressionToPositions(generatedProgression);
+        setPlayedProgression(positions);
+        setShowSavedProgression(true);
+        setSavedProgression([activePositions]);
 
+        /*playedProgression.forEach((chordPositions, index) => {setTimeout(() => {setActivePositions(chordPositions);}, index * 1000);});*/
+
+    }, [activePositions, generatedProgression, convertProgressionToPositions]);
+
+    /*=================================================================================================================*/
     const playGeneratedProgression = useCallback(() => {
         if (generatedProgression.length === 0) return;
         setIsProgressionPlaying(true);
@@ -196,11 +201,33 @@ const App: React.FC = () =>
                 if (index === generatedProgression.length - 1) {
                   setIsProgressionPlaying(false); // End of progression
                 }
-              }, index * 1000);
+              }, index * 750);
             });
     }, [generatedProgression, playRandomChordFromKey]);
 
-   /*=================================================================================================================*/
+    /*=================================================================================================================*/
+    const handleClearSavedProgression = useCallback(() => {
+        setSavedProgression([]);
+        setShowSavedProgression(false);  // Revert to show the generated progression
+    }, []);
+
+/*=====================================================================================================================*/
+/*=================================================CHORD PROGRESSION===================================================*/
+/*=====================================================================================================================*/
+
+    const handleChordSelection = useCallback((root: string, type: keyof typeof chordFormulas) => 
+    {
+        //resetToggles();
+        clearActivePositions();
+        setIsProgressionPlaying(false);
+        setSelectedChord({ root, type });
+        setActiveNotes([]);
+        setValidChords([]); // Clearing "Find"
+        setCurrentChordIndex(-1); 
+        updateChordNotes(root, type, includeSeventh, includeNinth);
+    }, [updateChordNotes, includeSeventh, includeNinth]);  
+
+    /*=================================================================================================================*/
 
     const renderRandomChordButtons = () => {
         const rootIndex = notes.indexOf(selectedKey);
@@ -229,6 +256,7 @@ const App: React.FC = () =>
 
 /*=================================================================================================================*/
 
+    /* DORMANT
     const cycleChords = (direction: 'next' | 'prev') => {
         if (validChords.length > 0) {
             let newIndex = direction === 'next' 
@@ -237,12 +265,18 @@ const App: React.FC = () =>
             setCurrentChordIndex(newIndex);
             setActivePositions(validChords[newIndex]);
         }
-    };
+    }; */
+
+    /*  
+    <button onClick={() => cycleChords('prev')} disabled={validChords.length <= 1} className="toggle-button">Prev</button>
+    <button onClick={() => cycleChords('next')} disabled={validChords.length <= 1} className="toggle-button">Next</button> 
+    <button onClick={playChord} disabled={!isPlayable} className="toggle-button">Play</button>      
+    */
   
 /*=================================================================================================================*/
 
     const handleKeySelection = (key: string, isMinor: boolean) => {
-        console.log("Selected Key: ", key, " Is Minor: ", isMinor);
+        setSelectedChord(null);
         setSelectedKey(key);
         setIsMinorKey(isMinor);
         resetToggles();
@@ -331,8 +365,11 @@ const App: React.FC = () =>
         }
     };
 
-    const radiusMajor = 175;
-    const radiusMinor = 120;
+    const progressionToDisplay = showSavedProgression ? savedProgression : generatedProgression;
+
+    const radiusMajor = 150;
+    const radiusMinor = 98;
+    
     return (
         <div className="App">
             <header className="App-header">
@@ -365,9 +402,12 @@ const App: React.FC = () =>
             </React.Fragment>);})}
 
 
-            <div className="circle-text">Select Key</div>
-        </div>
-            <div className="key-display">Chords in the Key of {selectedKey} {isMinorKey ? 'Minor' : 'Major'} </div>
+                <div className="circle-text">Select Key</div>
+            </div>
+
+            <div className="key-display">
+                Chords in the Key of <span className="text-highlight">{selectedKey} {isMinorKey ? 'Minor' : 'Major'}</span>
+            </div>
 
 
                 {/* Chord Buttons */}
@@ -383,14 +423,8 @@ const App: React.FC = () =>
                         <button onClick={toggleSeventh} className={`toggle-button ${includeSeventh ? 'active' : ''}`}>7th</button>
                         <button onClick={toggleNinth} className={`toggle-button ${includeNinth ? 'active' : ''}`}>9th</button>
                         <button onClick={toggleHighlightAll} className={`toggle-button ${highlightAll ? 'active' : ''}`}>All</button>
-                        <button onClick={findAndHighlightChord} className="toggle-button">Find</button>
-                        <button onClick={() => cycleChords('prev')} disabled={validChords.length <= 1} className="toggle-button">Prev</button>
-                        <button onClick={() => cycleChords('next')} disabled={validChords.length <= 1} className="toggle-button">Next</button> 
-                        <button onClick={playChord} disabled={!isPlayable} className="toggle-button">Play</button>
-                        <button onClick={handleGenerateProgression} className="toggle-button">Gen</button>
-                        <button onClick={playGeneratedProgression} className="toggle-button">PG</button>
+                        <button onClick={findAndHighlightChord} disabled={!selectedChord} className="toggle-button">Find</button>
                     </div>
-                        
                 </div>
 
 
@@ -401,14 +435,39 @@ const App: React.FC = () =>
                 </div>
 
                 
-                {generatedProgression.length > 0 && (
-                    <div className="generated-progression">
-                        {generatedProgression.map(chord => `${chord.root}${getChordTypeDisplay(chord.type)}`).join(' - ')}
-                    </div>
-                )}
-    
+                <div className="progression-actions">
+                    <button onClick={handleGenerateProgression} >Generate</button>
+                    <button onClick={playGeneratedProgression} >Play</button>
+                    <button onClick={handleSaveProgression} disabled={!generatedProgression.length}>Save</button>
+                    <button onClick={handleClearSavedProgression} disabled={!savedProgression.length}>Clear</button>
+                </div>
 
-        
+                {progressionToDisplay.length > 0 && (
+  <div className="chord-grid">
+    {progressionToDisplay.map((item: ChordProgression | ChordPosition[], index: number) => (
+      <React.Fragment key={index}>
+        <div className="chord-column">
+          <div className="chord-name">
+            {Array.isArray(item) ?
+              item.map(pos => `Position: String ${pos.string}, Fret ${pos.fret}`).join(', ') :
+              `${item.root}${getChordTypeDisplay(item.type)}`}
+          </div>
+          <div className="chord-degree">
+            {Array.isArray(item) ? '' : `${item.numeral}`}
+          </div>
+        </div>
+        {index < progressionToDisplay.length - 1 && (
+          <div className="chord-separator">
+            <div>-</div>
+            <div>-</div>
+          </div>
+        )}
+      </React.Fragment>
+    ))}
+  </div>
+)}
+                
+
             </header>
         </div>
     );

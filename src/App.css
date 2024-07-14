@@ -2,24 +2,7 @@
 
 .App {
   text-align: center;
-  padding-top: 20px;
-}
-
-body {
-  margin: 0;
-  background-color: #282c34; /* ACTUAL background */
-  color: white; 
-  overflow: hidden; 
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: block;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  padding-top: 0px;
 }
 
 .App-link {
@@ -46,12 +29,23 @@ body {
   }
 }
 
-/*====================================================================================*/
 
-.button-container {
-  display: flex;
+
+body {
+  margin: 0;
+  background-color: #51282c;              /* Header background */
+  color: white; 
+  overflow: hidden; 
+}
+/* swapped? */
+.App-header {
+  background-color: #51282c;              /* ACTUAL background */
+  min-height: 100vh;
+  display: block;
+  align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
+  font-size: calc(10px + 2vmin);
+  color: white;
 }
 
 button {
@@ -59,15 +53,40 @@ button {
   margin: 0px 2px;
   font-size: 14px;
   cursor: pointer;
-  background-color: #4597ba; /*BUTTON COLOR*/
+  background-color: #E7717D;              /*CHORD BUTTON COLOR*/
   color: white;
   border: none;
   border-radius: 5px;
   transition: background-color 0.3s ease;
 }
-
+.play-buttons button {
+  background-color: #E7717D;              /* PLAY BUTTON COLOR */
+}
 button:hover {
-  background-color: #77C3EC; /*HOVER COLOR*/
+  background-color: #4CAF50;              /* HOVER CHORD */
+}
+.play-buttons button:hover {
+  background-color: #4CAF50;              /* HOVER PLAY */
+}
+.selected {
+  background-color: #4CAF50;      /* Selection Color */
+  color: white;
+}
+.text-highlight {
+  color: #4CAF50;                 /* Selected Key Mimic */
+}
+.toggle-button.active {
+  background-color: #4CAF50;      /* TOGGLE */
+  color: white; 
+}
+
+
+/*====================================================================================*/
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
 }
 
 /*====================================================================================*/
@@ -80,7 +99,7 @@ button:hover {
   align-items: center;
   justify-content: center;
   margin-top: 20px;
-  margin-bottom: 40px;
+  margin-bottom: 15px;
 }
 
 .circle-button {
@@ -118,10 +137,7 @@ button:hover {
   text-align: center; 
 }
 
-.selected {
-  background-color: #96c9ff; /* Selection Color */
-  color: white;
-}
+
 
 .circle-text {
   position: absolute;
@@ -152,11 +168,6 @@ button:hover {
 
 .toggle-button {
   margin-bottom: 10px; 
-}
-
-.toggle-button.active {
-  background-color: #96c9ff; 
-  color: white; 
 }
 
 .toggle-buttons .toggle-button {
@@ -210,7 +221,7 @@ button:disabled {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 0px;
 }
 
 .chord-buttons, .play-buttons {
@@ -230,17 +241,7 @@ button:disabled {
   margin-top: 10px;
 }
 
-.play-buttons button {
-  background-color: #77C3EC; 
-}
-
-.play-buttons button:hover {
-  background-color: #96c9ff;
-}
-
-
 /*====================================================================================*/
-
 
 .generate-controls {
   display: flex;
@@ -254,7 +255,53 @@ button:disabled {
 }
 
 .generated-progression {
-  margin-top: 20px;
+  margin-top: 5px;
   font-size: 18px;
   font-weight: bold;
 }
+
+/*====================================================================================*/
+
+.generated-progression {
+  text-align: center;
+}
+
+.chord-names, .chord-degrees {
+  display: flex;
+  justify-content: center;
+  gap: 20px; 
+}
+
+.chord-names div, .chord-degrees div {
+  min-width: 50px; 
+}
+
+/*====================================================================================*/
+
+.chord-grid {
+  display: flex;
+  grid-template-columns: repeat(20, auto); 
+  grid-template-rows: repeat(2, 1fr); 
+  gap: 5px 5px; 
+  text-align: center;
+  justify-content: start; 
+  width: max-content;
+  margin: 0 auto; 
+  padding-top: 10px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.chord-name, .chord-degree {
+  white-space: nowrap; 
+  padding: 2px 4px;
+}
+
+.chord-name {
+  grid-row: 1;
+}
+
+.chord-degree {
+  grid-row: 2;
+}
+
