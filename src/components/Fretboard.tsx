@@ -10,6 +10,7 @@ interface FretboardProps {
   activePositions: ChordPosition[];
   clearActivePositions: () => void;
   isProgressionPlaying: boolean;
+  currentTheme: { fretboardColor: string };
 }
 
 const noteColors: { [key: string]: string } = {
@@ -28,7 +29,7 @@ const noteColors: { [key: string]: string } = {
 };
 
 const Fretboard: React.FC<FretboardProps> = ({
-  notes, activeNotes, highlightAll, activePositions, clearActivePositions, isProgressionPlaying }) => {
+  notes, activeNotes, highlightAll, activePositions, currentTheme }) => {
 
 
   const isActive = (string: number, fret: number) => {
@@ -53,7 +54,7 @@ const Fretboard: React.FC<FretboardProps> = ({
                 key={fretIndex}
                 className={`fret ${active ? 'active' : ''} ${fretIndex === 0 ? 'open-note' : ''}`}
 
-                style={{ backgroundColor: active ? noteColors[note.name] : '#eacaca' }} // FRET BACKGROUND
+                style={{ backgroundColor: active ? noteColors[note.name] : currentTheme.fretboardColor }} // FRET BACKGROUND
               >
                 <span className="note">{note.name}</span>
                 {active && (

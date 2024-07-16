@@ -275,10 +275,55 @@ const App: React.FC = () =>
   
 /*=================================================================================================================*/
 
+interface Theme {
+    backgroundColor: string;
+    buttonColor: string;
+    hoverColor: string;
+    fretboardColor: string;
+  }
+  
+  interface KeyThemes {
+    major: Theme;
+    minor: Theme;
+  }
+
+  const themes: Record<string, KeyThemes> = {
+    C: {
+        major: { backgroundColor: '#51282c', buttonColor: '#E7717D', hoverColor: '#4CAF50', fretboardColor: '#eacaca' },
+        minor: { backgroundColor: '#51282c', buttonColor: '#E7717D', hoverColor: '#4CAF50', fretboardColor: '#eacaca'  }
+    },
+    G: {
+        major: { backgroundColor: '#441414', buttonColor: '#e64949', hoverColor: '#42c546', fretboardColor: '#eacaca'  },
+        minor: { backgroundColor: '#441414', buttonColor: '#e64949', hoverColor: '#42c546', fretboardColor: '#eacaca'  }
+      },
+    D: {
+        major: { backgroundColor: '#282c34', buttonColor: '#4597ba', hoverColor: '#77C3EC', fretboardColor: '#b8ddf1'  },
+        minor: { backgroundColor: '#282c34', buttonColor: '#4597ba', hoverColor: '#82d3ff', fretboardColor: '#b8ddf1'  }
+    },
+    A: {
+        major: { backgroundColor: '#283149', buttonColor: '#4CAF50', hoverColor: '#E7717D', fretboardColor: '#eacaca'  },
+        minor: { backgroundColor: '#154016', buttonColor: '#4CAF50', hoverColor: '#E7717D', fretboardColor: '#eacaca'  }
+    },
+    E: {
+        major: { backgroundColor: '#282c34', buttonColor: '#4597ba', hoverColor: '#77C3EC', fretboardColor: '#eacaca'  },
+        minor: { backgroundColor: '#282c34', buttonColor: '#4597ba', hoverColor: '#82d3ff', fretboardColor: '#eacaca'  }
+      },
+  };
+  
+  const [currentTheme, setCurrentTheme] = useState<Theme>(themes.C.major);
+
+    useEffect(() => {
+        document.documentElement.style.setProperty('--background-color', currentTheme.backgroundColor);
+        document.documentElement.style.setProperty('--button-color', currentTheme.buttonColor);
+        document.documentElement.style.setProperty('--hover-color', currentTheme.hoverColor);
+    }, [currentTheme]);
+
+
     const handleKeySelection = (key: string, isMinor: boolean) => {
         setSelectedChord(null);
         setSelectedKey(key);
         setIsMinorKey(isMinor);
+        setCurrentTheme(themes[key][isMinor ? 'minor' : 'major']);
         resetToggles();
         setActiveNotes([]); 
         setActivePositions([]); 
@@ -418,7 +463,7 @@ const App: React.FC = () =>
 
                 {/* Fretboard and toggles container */}
                 <div className="fretboard-container">
-                    <Fretboard notes={fretboard} activeNotes={activeNotes} highlightAll={highlightAll} activePositions={activePositions} clearActivePositions={clearActivePositions} isProgressionPlaying={isProgressionPlaying}  />
+                    <Fretboard notes={fretboard} activeNotes={activeNotes} highlightAll={highlightAll} activePositions={activePositions} clearActivePositions={clearActivePositions} isProgressionPlaying={isProgressionPlaying}  currentTheme={currentTheme}  />
                     <div className="toggle-buttons">
                         <button onClick={toggleSeventh} className={`toggle-button ${includeSeventh ? 'active' : ''}`}>7th</button>
                         <button onClick={toggleNinth} className={`toggle-button ${includeNinth ? 'active' : ''}`}>9th</button>
