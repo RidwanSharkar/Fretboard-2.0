@@ -288,26 +288,60 @@ interface Theme {
   }
 
   const themes: Record<string, KeyThemes> = {
+    A: {
+        major: { backgroundColor: '#51282c', buttonColor: '#E7717D', hoverColor: '#4CAF50', fretboardColor: '#eacaca'  },
+        minor: { backgroundColor: '#ffb875', buttonColor: '#ff9e44', hoverColor: '#ff811b', fretboardColor: '#ecd5bf'  }
+    },
+    'A#': {
+        major: { backgroundColor: '#51282c', buttonColor: '#E7717D', hoverColor: '#4CAF50', fretboardColor: '#eacaca'  },
+        minor: { backgroundColor: '#ff9e44', buttonColor: '#ffb875', hoverColor: '#ff811b', fretboardColor: '#ecd5bf'  }
+    },
+
     C: {
-        major: { backgroundColor: '#51282c', buttonColor: '#E7717D', hoverColor: '#4CAF50', fretboardColor: '#eacaca' },
+        major: { backgroundColor: '#224d29', buttonColor: '#4fb45e', hoverColor: '#8efc9e', fretboardColor: '#ade3b6'  },
         minor: { backgroundColor: '#51282c', buttonColor: '#E7717D', hoverColor: '#4CAF50', fretboardColor: '#eacaca'  }
     },
-    G: {
-        major: { backgroundColor: '#441414', buttonColor: '#e64949', hoverColor: '#42c546', fretboardColor: '#eacaca'  },
-        minor: { backgroundColor: '#441414', buttonColor: '#e64949', hoverColor: '#42c546', fretboardColor: '#eacaca'  }
-      },
+    'C#': {
+        major: { backgroundColor: '#224d29', buttonColor: '#4fb45e', hoverColor: '#8efc9e', fretboardColor: '#ade3b6'  },
+        minor: { backgroundColor: '#51282c', buttonColor: '#E7717D', hoverColor: '#4CAF50', fretboardColor: '#eacaca'  }
+    },
+    
     D: {
         major: { backgroundColor: '#282c34', buttonColor: '#4597ba', hoverColor: '#77C3EC', fretboardColor: '#b8ddf1'  },
-        minor: { backgroundColor: '#282c34', buttonColor: '#4597ba', hoverColor: '#82d3ff', fretboardColor: '#b8ddf1'  }
+        minor: { backgroundColor: '#5DADE2', buttonColor: '#85C1E9', hoverColor: '#82d3ff', fretboardColor: '#b8ddf1'  }
     },
-    A: {
-        major: { backgroundColor: '#283149', buttonColor: '#4CAF50', hoverColor: '#E7717D', fretboardColor: '#eacaca'  },
-        minor: { backgroundColor: '#154016', buttonColor: '#4CAF50', hoverColor: '#E7717D', fretboardColor: '#eacaca'  }
+    'D#': {
+        major: { backgroundColor: '#282c34', buttonColor: '#4597ba', hoverColor: '#77C3EC', fretboardColor: '#b8ddf1'  },
+        minor: { backgroundColor: '#5DADE2', buttonColor: '#85C1E9', hoverColor: '#82d3ff', fretboardColor: '#b8ddf1'  }
     },
+
     E: {
-        major: { backgroundColor: '#282c34', buttonColor: '#4597ba', hoverColor: '#77C3EC', fretboardColor: '#eacaca'  },
-        minor: { backgroundColor: '#282c34', buttonColor: '#4597ba', hoverColor: '#82d3ff', fretboardColor: '#eacaca'  }
+        major: { backgroundColor: '#282c34', buttonColor: '#4597ba', hoverColor: '#77C3EC', fretboardColor: '#b8ddf1'  },
+        minor: { backgroundColor: '#1B4F72', buttonColor: '#4597ba', hoverColor: '#82d3ff', fretboardColor: '#b8ddf1'  }
       },
+
+    F: {
+        major: { backgroundColor: '#76448A', buttonColor: '#AF7AC5', hoverColor: '#D7BDE2', fretboardColor: '#D7BDE2'  },
+        minor: { backgroundColor: '#1B4F72', buttonColor: '#4597ba', hoverColor: '#82d3ff', fretboardColor: '#F5EEF8'  }
+    },
+    'F#': {
+        major: { backgroundColor: '#76448A', buttonColor: '#AF7AC5', hoverColor: '#D7BDE2', fretboardColor: '#D7BDE2'  },
+        minor: { backgroundColor: '#1B4F72', buttonColor: '#4597ba', hoverColor: '#82d3ff', fretboardColor: '#F5EEF8'  }
+    },
+
+    G: {
+        major: { backgroundColor: '#441414', buttonColor: '#e64949', hoverColor: '#F1948A', fretboardColor: '#E6B0AA'  },
+        minor: { backgroundColor: '#441414', buttonColor: '#e64949', hoverColor: '#42c546', fretboardColor: '#eacaca'  }
+      },
+    'G#': {
+        major: { backgroundColor: '#441414', buttonColor: '#e64949', hoverColor: '#F1948A', fretboardColor: '#E6B0AA'  },
+        minor: { backgroundColor: '#441414', buttonColor: '#e64949', hoverColor: '#42c546', fretboardColor: '#eacaca'  }
+    },
+
+    B: {
+        major: { backgroundColor: '#441414', buttonColor: '#e64949', hoverColor: '#42c546', fretboardColor: '#eacaca'  },
+        minor: { backgroundColor: '#B7950B', buttonColor: '#F4D03F', hoverColor: '#F9E79F', fretboardColor: '#F9E79F'  }
+    },
   };
   
   const [currentTheme, setCurrentTheme] = useState<Theme>(themes.C.major);
