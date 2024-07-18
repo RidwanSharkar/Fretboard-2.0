@@ -307,7 +307,7 @@ interface Theme {
     },
     
     D: {
-        major: { backgroundColor: '#282c34', buttonColor: '#4597ba', hoverColor: '#77C3EC', fretboardColor: '#b8ddf1'  },
+        major: { backgroundColor: '#282c34', buttonColor: '#4597ba', hoverColor: '#77C3EC', fretboardColor: '#D6EAF8'  },
         minor: { backgroundColor: '#5DADE2', buttonColor: '#85C1E9', hoverColor: '#82d3ff', fretboardColor: '#b8ddf1'  }
     },
     'D#': {
