@@ -21,10 +21,11 @@ ________________________________________________________________________________
 
 [IMPLEMENTATION 2] CHORD PROGRESSION GENERATOR FOR MUSIC COMPOSITION
 
-All possible chords and their inversion possibilities, as well as their relationships within higher-order Chord Progressions & Keys, are to be implemented for a comprehensive music theory exploration and visualization tool. Final plans include the ability to feed the user various chord progression possibilities (based on some desired user criteria). For instance, if a user wants to be in the key of A minor and wants to explore the various chord progressions it offers, the program will follow outlined chord progression formulas and feed the user various Chord Progression possibilties that are "ready-made" to begin song-writing. Options to "break the rules" of music theory will be implemented to mimic realistic composition, including transitioning to and borrowing compatible chords from neighboring keys.
+If a user wants to be in the key of A minor and wants to explore the various chord progressions it offers, the program will follow outlined chord progression formulas and feed the user various Chord Progression possibilties that are "ready-made" to begin song-writing. Options to "break the rules" of music theory will be implemented to mimic realistic composition, including transitioning to and borrowing compatible chords from neighboring keys.
 
 
 ![image](https://github.com/RidwanSharkar/Fretboard-2.0/assets/158855066/3ecf0a70-ade2-4e37-8158-b2a714cb42e3)
+![image](https://github.com/user-attachments/assets/3b7c8e6e-9544-4da7-8e92-62bd72a4aab3)
 
 
 
