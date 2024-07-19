@@ -164,9 +164,7 @@ const App: React.FC = () =>
         const rootIndex = notes.indexOf(root);
         const noteNames = chordFormulas[type].map(interval => notes[(rootIndex + interval) % 12]);
         const positions = possibleChord(fretboard, noteNames);
-        // Assuming possibleChord returns ChordPosition[][]
-        // Flatten the array if multiple position sets are not needed
-        return positions.flat(); // Adjust based on your specific requirement
+        return positions.flat();
     };
 
     /*=================================================================================================================*/
@@ -178,22 +176,12 @@ const App: React.FC = () =>
         const progression = generateChordProgressions(isMinorKey, selectedKey);
         setGeneratedProgression(progression as ChordProgression[]);
     }, [selectedKey, isMinorKey]);
-
     /*=================================================================================================================*/
-    const handleSaveProgression = useCallback(() => {
-        const positions = convertProgressionToPositions(generatedProgression);
-        setPlayedProgression(positions);
-        setShowSavedProgression(true);
-        setSavedProgression([activePositions]);
 
-        /*playedProgression.forEach((chordPositions, index) => {setTimeout(() => {setActivePositions(chordPositions);}, index * 1000);});*/
-
-    }, [activePositions, generatedProgression, convertProgressionToPositions]);
-
-    /*=================================================================================================================*/
     const playGeneratedProgression = useCallback(() => {
         if (generatedProgression.length === 0) return;
         setIsProgressionPlaying(true);
+        setPlayedProgression([]);
         
         generatedProgression.forEach((chord, index) => {
             setTimeout(() => {
@@ -206,9 +194,42 @@ const App: React.FC = () =>
     }, [generatedProgression, playRandomChordFromKey]);
 
     /*=================================================================================================================*/
+    
+    const handleSaveProgression = useCallback(() => {
+        setIsProgressionPlaying(true);
+        setSavedProgression([activePositions]);
+        if (!savedProgression)
+        {
+            const positions = convertProgressionToPositions(generatedProgression);
+            setPlayedProgression(positions);
+            setSavedProgression([activePositions]);
+            setShowSavedProgression(true);
+        
+            playedProgression.forEach((chordPositions, index) => {
+                setTimeout(() => {
+                    setActivePositions(chordPositions);
+                }, index * 875);
+            });
+        }
+        else
+        {   
+            //setShowSavedProgression(true);
+            playedProgression.forEach((chordPositions, index) => {
+                setTimeout(() => {
+                    setActivePositions(chordPositions);
+                }, index * 875);
+            });
+        }
+        setIsProgressionPlaying(false);
+
+    }, [activePositions, generatedProgression, convertProgressionToPositions, playedProgression, savedProgression]);
+    
+
+    /*=================================================================================================================*/
+
     const handleClearSavedProgression = useCallback(() => {
         setSavedProgression([]);
-        setShowSavedProgression(false);  // Revert to show the generated progression
+        setShowSavedProgression(false); 
     }, []);
 
 /*=====================================================================================================================*/
@@ -275,6 +296,7 @@ const App: React.FC = () =>
   
 /*=================================================================================================================*/
 
+/* MOVE */
 interface Theme {
     backgroundColor: string;
     buttonColor: string;
@@ -290,7 +312,7 @@ interface Theme {
   const themes: Record<string, KeyThemes> = {
     A: {
         major: { backgroundColor: '#51282c', buttonColor: '#E7717D', hoverColor: '#4CAF50', fretboardColor: '#eacaca'  },
-        minor: { backgroundColor: '#ffb875', buttonColor: '#ff9e44', hoverColor: '#ff811b', fretboardColor: '#ecd5bf'  }
+        minor: { backgroundColor: '#ffb07c', buttonColor: '#ff9e44', hoverColor: '#ff811b', fretboardColor: '#ecd5bf'  }
     },
     'A#': {
         major: { backgroundColor: '#51282c', buttonColor: '#E7717D', hoverColor: '#4CAF50', fretboardColor: '#eacaca'  },
@@ -340,7 +362,7 @@ interface Theme {
 
     B: {
         major: { backgroundColor: '#441414', buttonColor: '#e64949', hoverColor: '#42c546', fretboardColor: '#eacaca'  },
-        minor: { backgroundColor: '#B7950B', buttonColor: '#F4D03F', hoverColor: '#F9E79F', fretboardColor: '#F9E79F'  }
+        minor: { backgroundColor: '#F4D03F', buttonColor: '#F4D03F', hoverColor: '#F9E79F', fretboardColor: '#F9E79F'  }
     },
   };
   
@@ -482,11 +504,11 @@ interface Theme {
 
 
                 <div className="circle-text">Select Key</div>
-            </div>
+                </div>
 
-            <div className="key-display">
-                Chords in the Key of <span className="text-highlight">{selectedKey} {isMinorKey ? 'Minor' : 'Major'}</span>
-            </div>
+                <div className="key-display">
+                    Chords in the Key of <span className="text-highlight">{selectedKey} {isMinorKey ? 'Minor' : 'Major'}</span>
+                </div>
 
 
                 {/* Chord Buttons */}
@@ -517,34 +539,35 @@ interface Theme {
                 <div className="progression-actions">
                     <button onClick={handleGenerateProgression} >Generate</button>
                     <button onClick={playGeneratedProgression} >Play</button>
-                    <button onClick={handleSaveProgression} disabled={!generatedProgression.length}>Save</button>
-                    <button onClick={handleClearSavedProgression} disabled={!savedProgression.length}>Clear</button>
+                    <button onClick={handleSaveProgression} disabled={!playedProgression.length || isProgressionPlaying}>Save</button>
+                    <button onClick={handleClearSavedProgression} disabled={savedProgression.length === 0}>Clear</button>
                 </div>
 
+
                 {progressionToDisplay.length > 0 && (
-  <div className="chord-grid">
-    {progressionToDisplay.map((item: ChordProgression | ChordPosition[], index: number) => (
-      <React.Fragment key={index}>
-        <div className="chord-column">
-          <div className="chord-name">
-            {Array.isArray(item) ?
-              item.map(pos => `Position: String ${pos.string}, Fret ${pos.fret}`).join(', ') :
-              `${item.root}${getChordTypeDisplay(item.type)}`}
-          </div>
-          <div className="chord-degree">
-            {Array.isArray(item) ? '' : `${item.numeral}`}
-          </div>
-        </div>
-        {index < progressionToDisplay.length - 1 && (
-          <div className="chord-separator">
-            <div>-</div>
-            <div>-</div>
-          </div>
-        )}
-      </React.Fragment>
-    ))}
-  </div>
-)}
+                <div className="chord-grid">
+                    {progressionToDisplay.map((item: ChordProgression | ChordPosition[], index: number) => (
+                    <React.Fragment key={index}>
+                        <div className="chord-column">
+                        <div className="chord-name">
+                            {Array.isArray(item) ?
+                            item.map(pos => `Position: String ${pos.string}, Fret ${pos.fret}`).join(', ') :
+                            `${item.root}${getChordTypeDisplay(item.type)}`}
+                        </div>
+                        <div className="chord-degree">
+                            {Array.isArray(item) ? '' : `${item.numeral}`}
+                        </div>
+                        </div>
+                        {index < progressionToDisplay.length - 1 && (
+                        <div className="chord-separator">
+                            <div>-</div>
+                            <div>-</div>
+                        </div>
+                        )}
+                    </React.Fragment>
+                    ))}
+                </div>
+                )}
                 
 
             </header>
