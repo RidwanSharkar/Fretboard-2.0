@@ -18,11 +18,24 @@ const chordProgressionRules: Record<ScaleType, Partial<Record<RomanNumeral, Roma
         'ii': ['V', 'vii°'],
         'iii': ['vi', 'IV'],
         'IV': ['ii', 'V', 'vii°'],
-        'V': ['I', 'vii°'],
-        'vi': ['IV', 'ii'],
-        'vii°': ['I', 'vi']
+        'V': ['I', 'vii°', 'vi'], // added 'vi'
+        'vi': ['IV'],             // removed 'ii'
+        'vii°': ['I', 'vi', 'V']  // added 'V'
     },
 
+    minor: {
+        'i': ['ii°', 'III', 'iv', 'V', 'VI', 'VII', 'vii°'],
+        'ii°': ['V', 'vii°'],
+        'III': ['iv', 'ii°', 'VI'],
+        'iv': ['ii°', 'V', 'vii°'],
+        'V': ['i', 'vii°', 'VI'],
+        'VI': ['iv', 'ii°'],
+        'vii°': ['i', 'VI', 'V'],
+        'VII': ['III', 'iv', 'ii°']
+    }
+};
+
+/* Old Expanded to Melodic Minor:
     minor: {
         'i': ['ii°', 'III', 'iv', 'v', 'VI', 'VII'],
         'ii°': ['v', 'VII'],
@@ -33,8 +46,7 @@ const chordProgressionRules: Record<ScaleType, Partial<Record<RomanNumeral, Roma
         'VI': ['iv', 'ii°'],
         'vii°': ['i', 'VI'],
         'VII': ['III', 'iv', 'ii°']
-    }
-};
+    } */
 
 
 export function generateChordProgressions(isMinorKey: boolean, selectedKey: string): { root: string; type: keyof typeof chordFormulas }[]
@@ -49,17 +61,10 @@ export function generateChordProgressions(isMinorKey: boolean, selectedKey: stri
 export function generateChordProgression(isMinorKey: boolean, selectedKey: string): ChordProgression[] {
     const scaleType: ScaleType = isMinorKey ? 'minor' : 'major';
     const rules = chordProgressionRules[scaleType];
-    const startingOptions: RomanNumeral[] = isMinorKey ? ['VI', 'i'] : ['vi', 'iii']; // 'VII'
-    const endingOptions: RomanNumeral[] = isMinorKey ? ['i', 'v'] : ['I', 'V']; //'v'
+    const startingOptions: RomanNumeral[] = isMinorKey ? ['i', 'ii°'] : ['I', 'ii'];                // removed 'VI'     :||: 'vi', 'iii'
+    const endingOptions: RomanNumeral[] = isMinorKey ? ['VII', 'III', 'iv'] : ['I', 'V', 'IV'];     // removed 'i', 'v' :||: 
 
     let currentChord: RomanNumeral = startingOptions[Math.floor(Math.random() * startingOptions.length)];
-
-    /*
-    let progression: { root: string; type: keyof typeof chordFormulas, numeral: RomanNumeral }[] = [{
-        ...getChordFromRomanNumeral(currentChord, selectedKey, notes, isMinorKey),
-        numeral: currentChord
-    }];
-    */
 
     let progression: ChordProgression[] = [{
         ...getChordFromRomanNumeral(currentChord, selectedKey, notes, isMinorKey),
