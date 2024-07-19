@@ -26,6 +26,7 @@ If a user wants to be in the key of A minor and wants to explore the various cho
 
 ![image](https://github.com/RidwanSharkar/Fretboard-2.0/assets/158855066/3ecf0a70-ade2-4e37-8158-b2a714cb42e3)
 ![image](https://github.com/user-attachments/assets/3b7c8e6e-9544-4da7-8e92-62bd72a4aab3)
+![image](https://github.com/user-attachments/assets/32caf38b-1ec0-4297-82f3-af0eb0fbfaa5)
 
 
 
