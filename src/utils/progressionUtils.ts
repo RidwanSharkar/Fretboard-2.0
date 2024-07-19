@@ -42,7 +42,7 @@ export function generateChordProgressions(isMinorKey: boolean, selectedKey: stri
     let progression = [];
     do {
         progression = generateChordProgression(isMinorKey, selectedKey);
-    } while (progression.length < 4 || progression.length > 9); // filter range
+    } while (progression.length < 4 || progression.length > 7); // filter range
     return progression;
 }
 
@@ -50,7 +50,7 @@ export function generateChordProgression(isMinorKey: boolean, selectedKey: strin
     const scaleType: ScaleType = isMinorKey ? 'minor' : 'major';
     const rules = chordProgressionRules[scaleType];
     const startingOptions: RomanNumeral[] = isMinorKey ? ['VI', 'i'] : ['vi', 'iii']; // 'VII'
-    const endingOptions: RomanNumeral[] = isMinorKey ? ['i'] : ['I', 'V']; //'v'
+    const endingOptions: RomanNumeral[] = isMinorKey ? ['i', 'v'] : ['I', 'V']; //'v'
 
     let currentChord: RomanNumeral = startingOptions[Math.floor(Math.random() * startingOptions.length)];
 
