@@ -1,3 +1,5 @@
+________________________________________________________________________________________________________________
+
 **Fretboard Explorer 2.0**
 
 ________________________________________________________________________________________________________________
@@ -13,7 +15,7 @@ ________________________________________________________________________________
 
 **[IMPLEMENTATION 1]** INTRACTIVE FRETBOARD FOR MUSIC THEORY EXPLORATION
 
-A simple Array of all of the notes in the western scale [A, A#, B, C, C#, D, D#, E, F, F#, G, G#] are iterated through and wrapped around (%) to extract the correct notes from the appropriate chord formula. For instance, the C Major chord consists of 1-3-5, or C-E-G, and will be highlighted upon user selection.
+An array of all of the notes in the western scale [A, A#, B, C, C#, D, D#, E, F, F#, G, G#] are iterated through to extract the correct notes from the appropriate chord formula. For instance, the C Major chord consists of 1-3-5, or C-E-G, and will be highlighted upon user selection.
 
 Once chord notes are displayed, an algorithm will determine which combinations of these available notes within the selected chord can be considered a "valid chord", meaning that they are actually physically playable on the guitar in real life. This involves eliminating the possibility of more than one note per string, or that no 2 notes be 5 frets apart (for instance, depending on the length of your fingers). Various chord customization parameters, such as "no open notes", or "don't skip strings" are available as well.  
 
@@ -21,7 +23,7 @@ ________________________________________________________________________________
 
 **[IMPLEMENTATION 2]** CHORD PROGRESSION GENERATOR FOR MUSIC COMPOSITION
 
-If a user wants to be in the key of A minor and wants to explore the various chord progressions it offers, the program will follow outlined chord progression formulas and feed the user various Chord Progression possibilties that are "ready-made" to begin song-writing. Options to "break the rules" of music theory will be implemented to mimic realistic composition, including transitioning to and borrowing compatible chords from neighboring keys. MIDI implementation allows users to hear the exact chord displayed on the screen and throughout the generated chord progression. 
+If a user wants to be in the key of A minor and wants to explore the various chord progressions it offers, the program will follow outlined chord progression formulas and feed the user various Chord Progression possibilties that are "ready-made" to begin song-writing. Options to "break the rules" of music theory are implemented to mimic realistic composition, including transitioning to and borrowing compatible chords from neighboring keys. MIDI integration allows users to hear the exact chord displayed on the screen and throughout the generated chord progression. Randomly generated chord progressions that the user likes can be saved for future use. 
 
 
 ![image](https://github.com/RidwanSharkar/Fretboard-2.0/assets/158855066/3ecf0a70-ade2-4e37-8158-b2a714cb42e3)
