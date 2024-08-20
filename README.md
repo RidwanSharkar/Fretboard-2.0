@@ -25,7 +25,7 @@ ________________________________________________________________________________
 
 **[IMPLEMENTATION 2]** CHORD PROGRESSION GENERATOR FOR MUSIC COMPOSITION
 
-• If a user wants to be in the key of A minor and wants to explore the various chord progressions it offers, the program will follow outlined chord progression formulas and feed the user various Chord Progression possibilties that are ready-made to begin song-writing. Options to break the rules of music theory are implemented to mimic realistic composition, including transitioning to and borrowing compatible chords from neighboring keys. 
+• If a user wants to be in the key of A minor, for instance, and wants to explore the various chord progressions it offers, the program will follow outlined chord progression formulas and feed the user various Chord Progression possibilties that are ready-made to begin song-writing. Options to break the rules of music theory are added to mimic realistic composition, including transitioning to and borrowing compatible chords from neighboring keys. 
 
 •  MIDI integration allows users to hear the exact chord displayed on the screen and throughout the generated chord progression. Randomly generated chord progressions that the user likes can be saved for future use. 
 
