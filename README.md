@@ -3,7 +3,13 @@ ________________________________________________________________________________
 
 **OVERVIEW:**
 
-Fretboard Explorer is designed for guitarists who want to explore music theory and chord progressions, and their corresponding finger-positions across the fretboard. The program takes user input for a chord, key, or chord progression and computes all possible fingerings across the fretboard. Users can specify detailed chord qualities including major, minor, diminished, augmented, and extended chords such as 7th, 9th, and more. It supports specification of chord criteria (such as 3 strings only, or 3 frets apart) or modifications to match user preferences for finger patterns.  
+• Fretboard Explorer is designed for guitarists who want to explore music theory and chord progressions, and their corresponding finger-positions across the fretboard. 
+
+• The program takes user input for a chord, key, or chord progression and computes all possible fingerings across the fretboard. 
+
+• Users can specify detailed chord qualities including major, minor, diminished, augmented, and extended chords such as 7th, 9th, and more. 
+
+• Fretboard supports specification of chord criteria (e.g. skipping strings for voicing) or modifications to match user preferences for finger patterns.  
 
 
 ![All Chords in All Keys](https://github.com/RidwanSharkar/Fretboard-2.0/assets/158855066/f5535eca-b43c-4fac-ab7f-a23a4981c85b)
@@ -20,16 +26,17 @@ ________________________________________________________________________________
 
 ________________________________________________________________________________________________________________
 
+![image](https://github.com/user-attachments/assets/32caf38b-1ec0-4297-82f3-af0eb0fbfaa5)
+
 **[IMPLEMENTATION 2]** CHORD PROGRESSION GENERATOR FOR MUSIC COMPOSITION
 
 • If a user wants to be in the key of A minor, for instance, and wants to explore the various chord progressions it offers, the program will follow outlined chord progression formulas and feed the user various Chord Progression possibilties that are ready-made to begin song-writing. Options to break the rules of music theory are added to mimic realistic composition, including transitioning to and borrowing compatible chords from neighboring keys. 
 
+![image](https://github.com/RidwanSharkar/Fretboard-2.0/assets/158855066/3ecf0a70-ade2-4e37-8158-b2a714cb42e3)
+
 •  MIDI integration allows users to hear the exact chord displayed on the screen and throughout the generated chord progression. Randomly generated chord progressions that the user likes can be saved for future use. 
 
-
-![image](https://github.com/RidwanSharkar/Fretboard-2.0/assets/158855066/3ecf0a70-ade2-4e37-8158-b2a714cb42e3)
 ![image](https://github.com/user-attachments/assets/3b7c8e6e-9544-4da7-8e92-62bd72a4aab3)
-![image](https://github.com/user-attachments/assets/32caf38b-1ec0-4297-82f3-af0eb0fbfaa5)
 
 
 
