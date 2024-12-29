@@ -1,10 +1,8 @@
 # Fretboard Explorer v2.0
-
----
+Fretboard Explorer is designed for guitarists who want to explore music theory and chord progressions, and their corresponding finger-positions across the fretboard.
 
 ## Overview: 
 
-• Fretboard Explorer is designed for guitarists who want to explore music theory and chord progressions, and their corresponding finger-positions across the fretboard. <br>
 • The program takes user input for a chord, key, or chord progression and computes all possible fingerings across the fretboard. <br>
 • Users can specify detailed chord qualities including major, minor, diminished, augmented, and extended chords such as 7th & 9th. <br>
 • Fretboard supports specification of chord criteria (e.g. skipping strings for voicing) or modifications to match user preferences for finger patterns.  <br>
